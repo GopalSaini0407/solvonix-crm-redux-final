@@ -1,0 +1,13 @@
+@import "tailwindcss";
+/* @import 'react-date-range/dist/styles.css'; */
+/* @import 'react-date-range/dist/theme/default.css'; */
+
+
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.menu:hover span .submenuIcon {
+  color: black;
+}
