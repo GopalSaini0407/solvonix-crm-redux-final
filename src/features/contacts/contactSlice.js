@@ -48,6 +48,7 @@ import contactService from "./contactService";
         per_page:10,
     },
         fields:{},
+        fieldValues:{},
         activityLog:[],
         loading: {
             fetch: false,
@@ -67,7 +68,12 @@ import contactService from "./contactService";
    const contactSlice=createSlice({
     name:"contacts",
     initialState,
-    reducers:{},
+    reducers:{
+        setFieldValue:(state,action)=>{
+          const {fieldName,value}=action.payload;
+          state.fieldValues[fieldName]=value
+        }
+    },
     extraReducers:(builder)=>{
         builder
 
@@ -93,16 +99,16 @@ import contactService from "./contactService";
         // add contact
 
         .addCase(addContact.pending,(state)=>{
-            state.loading.fetch=true;
-            state.error.fetch=null;
+            state.loading.create=true;
+            state.error.create=null;
         })
         .addCase(addContact.fulfilled,(state,action)=>{
-            state.loading.fetch=false;
-            state.contacts.push(action.payload);
+            state.loading.create=false;
+            state.contacts.push(action.payload?.data);
         })
         .addCase(addContact.rejected,(state,action)=>{
-            state.loading.fetch=false;
-            state.error.fetch=action.payload;
+            state.loading.create=false;
+            state.error.create=action.payload;
         })
 
         // update contact
@@ -138,5 +144,6 @@ import contactService from "./contactService";
 
     }
    })
-
+   
+export const { setFieldValue } = contactSlice.actions;
 export default contactSlice.reducer;

@@ -21,7 +21,7 @@ import ErrorState from "../../components/ui/ErrorState";
 
 const ContactList = () => {
   const dispatch = useDispatch();
-  const {openModal}=useModal();
+  const {openModal,closeModal}=useModal();
 
   const { contacts, pagination, loading, error } = useSelector(
     (state) => state.contacts
@@ -30,6 +30,11 @@ const ContactList = () => {
   useEffect(() => {
     dispatch(fetchContacts({ page: 1 }));
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("CONTACT LIST DATA:", contacts);
+  }, [contacts]);
+  
 
   // ---------------- HANDLERS ----------------
 
@@ -61,13 +66,7 @@ const ContactList = () => {
 
 // 🔹 Error
 if (error.fetch) {
-  return (
-    <ErrorState
-      title="Failed to load contacts"
-      message={error.fetch}
-      onRetry={() => dispatch(fetchContacts())}
-    />
-  );
+  console.log(error);
 }
 
   return (
@@ -93,7 +92,7 @@ if (error.fetch) {
           onClick={()=>openModal({
             title:"add contact",
             size:"xl",
-            content:<ContactForm/>,
+            content:<ContactForm closeModal={closeModal}/>,
            })}
           >
           Add contact
@@ -137,7 +136,7 @@ if (error.fetch) {
                           .join("") || "?"}
                       </div>
                       <div className="font-medium text-gray-900">
-                        {contact.name || "Unnamed Contact"}
+                        {contact.first_name+ " "+ contact.last_name || "Unnamed Contact"}
                       </div>
                     </div>
                   </td>

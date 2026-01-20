@@ -1,18 +1,68 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchContactFields } from "./contactSlice";
-
-const ContactForm = () => {
+import { fetchContactFields,setFieldValue,addContact,fetchContacts } from "./contactSlice";
+import RenderField from "./RenderField";
+const ContactForm = ({closeModal}) => {
   const dispatch = useDispatch();
-  const { fields, error, loading } = useSelector(
+
+  const { fields,fieldValues, error, loading } = useSelector(
     (state) => state.contacts
   );
+
+
+const handleChange=(field,value)=>{
+  dispatch(setFieldValue({
+    fieldName:field.field_name,
+    value,
+  }))
+}
+
+
+const buildPayload=(value)=>{
+  const payload={};
+
+  Object.entries(value).forEach(([key,value])=>{
+    if(
+      value !=="" &&
+      value!==null &&
+      value !==undefined &&
+      !(Array.isArray(value) && value.length===0)
+    ){
+      payload[key]=value;
+    }
+  })
+  return payload;
+}
+
+const handleSubmit= async()=>{
+  const payload=buildPayload(fieldValues);
+
+  try{
+    await dispatch(addContact(payload)).unwrap();
+    dispatch(fetchContacts());
+
+    closeModal();
+  }catch(err){
+     console.log("add contact failed",err);
+  }
+}
+
 
   useEffect(() => {
     if (!Object.keys(fields).length) {
       dispatch(fetchContactFields());
     }
   }, [dispatch, fields]);
+
+
+  // useEffect(() => {
+  //   console.log("FORM DATA:", fieldValues);
+  // }, [fieldValues]);
+  
+  // if (error.create)
+  //   return (
+  //     <p className="text-red-600 text-center">{error.create}</p>
+  //   );
 
   if (loading.fetch)
     return (
@@ -26,112 +76,22 @@ const ContactForm = () => {
       <p className="text-red-600 text-center">{error.fetch}</p>
     );
 
-  const renderField = (field) => {
-    const options = field.field_options
-      ? field.field_options.split(",").map((o) => o.trim())
-      : [];
-
-    const baseInput =
-      "w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500";
-
-    switch (field.field_type) {
-      case "String":
-        return (
-          <input
-            type="text"
-            className={baseInput}
-            placeholder={field.placeholder}
-          />
-        );
-
-      case "LargeText":
-        return (
-          <textarea
-            rows="3"
-            className={baseInput}
-            placeholder={field.placeholder}
-          />
-        );
-
-      case "List":
-        return (
-          <select className={baseInput}>
-            <option value="">Select</option>
-            {options.map((opt, i) => (
-              <option key={i} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        );
-
-      case "Date":
-        return <input type="date" className={baseInput} />;
-
-      case "DateTime":
-        return (
-          <input
-            type="datetime-local"
-            className={baseInput}
-          />
-        );
-
-      case "Integer":
-        return <input type="number" className={baseInput} />;
-
-      case "Decimal":
-        return (
-          <input
-            type="number"
-            step="0.01"
-            className={baseInput}
-          />
-        );
-
-      case "File":
-        return (
-          <input
-            type="file"
-            className="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-blue-700 hover:file:bg-blue-100"
-          />
-        );
-
-      case "Options":
-        return (
-          <div className="space-y-2">
-            {options.map((o, i) => (
-              <label
-                key={i}
-                className="flex items-center gap-2 text-sm"
-              >
-                <input
-                  type={
-                    field.is_multiple === 1
-                      ? "checkbox"
-                      : "radio"
-                  }
-                  name={field.field_name}
-                  value={o}
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                {o}
-              </label>
-            ))}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
+  
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">
         Contact Form
       </h1>
 
-      {Object.entries(fields).map(
+ {error?.create && (
+  <div className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-red-700">
+    {typeof error.create === "string"
+      ? error.create
+      : error.create.message}
+  </div>
+)}
+
+      {Object.entries(fields || {}).map(
         ([groupName, groupFields]) => (
           <div
             key={groupName}
@@ -150,8 +110,11 @@ const ContactForm = () => {
                       <span className="ml-1 text-red-500">*</span>
                     )}
                   </label>
-
-                  {renderField(field)}
+                  <RenderField
+                     field={field}
+                     value={fieldValues[field.field_name]}
+                     onChange={(value) => handleChange(field, value)}
+                      />
                 </div>
               ))}
             </div>
@@ -160,8 +123,10 @@ const ContactForm = () => {
       )}
 
       <div className="mt-6 text-right">
-        <button className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
-          Submit
+        <button onClick={handleSubmit}
+        disabled={loading.create}
+        className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
+          {loading.create ? "Saving...":"Submit"}
         </button>
       </div>
     </div>
