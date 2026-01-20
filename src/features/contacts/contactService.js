@@ -29,7 +29,8 @@ const getContactFields=async()=>{
 // delete contact
 
 const deleteContact=async(contactId)=>{
- const res=await api.get(`/user/get`);
+ const res=await api.get(`/user/contact/delete/${contactId}`);
+ return res.data;
  
 }
 
@@ -47,5 +48,6 @@ export default {
     addContact,
     updateContact,
     getContactFields,
-    contactActivityLog
+    contactActivityLog,
+    deleteContact
 }

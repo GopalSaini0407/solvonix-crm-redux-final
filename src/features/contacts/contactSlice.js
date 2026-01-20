@@ -28,6 +28,18 @@ import contactService from "./contactService";
     }
    })
 
+  export const deleteContact=createAsyncThunk("contacts/deleteContacts",async(contactId,thunkAPI)=>{
+   
+    try {
+        await contactService.deleteContact(contactId);
+        return contactId;
+        
+    } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+
+   })
+
   export const fetchContactFields=createAsyncThunk("contacts/getContactFields",async(_,thunkAPI)=>{
    
     try {
@@ -38,6 +50,15 @@ import contactService from "./contactService";
     }
 
    })
+
+   export const fetchContactActivityLog=createAsyncThunk("contacts/contactActivityLog",async(contactId,thunkAPI)=>
+{
+    try {
+        return await contactService.contactActivityLog(contactId);
+    } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+})
 
    const initialState={
     contacts:[],
@@ -54,11 +75,15 @@ import contactService from "./contactService";
             fetch: false,
             create: false,
             update: false,
+            delete:false,
+            log:false
           },
           error: {
             fetch: null,
             create: null,
             update: null,
+            delete:null,
+            log:null
           }
    }
 
@@ -72,7 +97,10 @@ import contactService from "./contactService";
         setFieldValue:(state,action)=>{
           const {fieldName,value}=action.payload;
           state.fieldValues[fieldName]=value
-        }
+        },
+        resetFieldValues: (state) => {
+      state.fieldValues = {};
+    },
     },
     extraReducers:(builder)=>{
         builder
@@ -119,14 +147,41 @@ import contactService from "./contactService";
         })
         .addCase(updateContact.fulfilled,(state,action)=>{
             state.loading.update=false;
-            const index=state.contacts.findIndex((contact)=>contact.id===action.payload.id);
-            if(index!==-1) state.contacts[index]=action.payload;
+            const index=state.contacts.findIndex((contact)=>contact.id===action.payload?.data.id);
+            if(index!==-1) state.contacts[index]=action.payload?.data;
         })
         .addCase(updateContact.rejected,(state,action)=>{
             state.loading.update=false;
             state.error.update=action.payload;
         })
 
+        // delete contact
+
+        .addCase(deleteContact.pending,(state)=>{
+          state.loading.delete=true;
+          state.error.delete=null;
+        })
+        .addCase(deleteContact.fulfilled,(state,action)=>{
+            state.loading.delete=false;
+           state.contacts=state.contacts.filter((contact)=>contact.id!==action.payload?.data); 
+        })
+        .addCase(deleteContact.rejected,(state,action)=>{
+            state.loading.delete=false;
+            state.error.delete=action.payload?.data;
+        })
+          // Fetch Activity Log
+           .addCase(fetchContactActivityLog.pending, (state) => {
+             state.loading.log = true;
+             state.error.log = null;
+           })
+           .addCase(fetchContactActivityLog.fulfilled, (state, action) => {
+             state.loading.log = false;
+             state.activityLog = action.payload.data; // backend se return array of logs
+           })
+           .addCase(fetchContactActivityLog.rejected, (state, action) => {
+             state.loading.log = false;
+             state.error.log = action.payload;
+           })
         // fetchContactFields
 
         .addCase(fetchContactFields.pending,(state)=>{
@@ -145,5 +200,5 @@ import contactService from "./contactService";
     }
    })
    
-export const { setFieldValue } = contactSlice.actions;
+export const { setFieldValue,resetFieldValues } = contactSlice.actions;
 export default contactSlice.reducer;

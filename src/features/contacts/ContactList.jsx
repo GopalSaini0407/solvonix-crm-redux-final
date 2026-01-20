@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchContacts } from "./contactSlice";
+import { fetchContacts,deleteContact } from "./contactSlice";
 import {
   Eye,
   Phone,
@@ -10,7 +10,8 @@ import {
   ChevronRight,
   User,
   UserPlus,
-  Download
+  Download,
+  Pencil
 } from "lucide-react";
 import ContactForm from './ContactForm'
 import {useModal} from "../../context/ModalContext";
@@ -18,6 +19,7 @@ import CustomButton from "../../components/ui/CustomButton";
 import {exportToCSV} from "../../utils/exportCSV";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
+import ContactActivityLog from "./ContactActivityLog";
 
 const ContactList = () => {
   const dispatch = useDispatch();
@@ -28,12 +30,12 @@ const ContactList = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchContacts({ page: 1 }));
+    dispatch(fetchContacts({ page: pagination.current_page }));
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log("CONTACT LIST DATA:", contacts);
-  }, [contacts]);
+  // useEffect(() => {
+  //   console.log("CONTACT LIST DATA:", contacts);
+  // }, [contacts]);
   
 
   // ---------------- HANDLERS ----------------
@@ -54,9 +56,18 @@ const ContactList = () => {
     console.log("Email", contact.email);
   };
 
-  const handleDeleteContact = (id) => {
-    console.log("Delete contact", id);
-  };
+  const handleDeleteContact = async (contactId) => {
+  if(window.confirm("Are you sure you want to delete this contact?")){
+    try {
+      await dispatch(deleteContact(contactId)).unwrap();
+      // optional: refresh pagination data
+      dispatch(fetchContacts({ page: pagination.current_page }));
+    } catch(err) {
+      console.log("Delete failed", err);
+    }
+  }
+};
+
 
   // ---------------- UI ----------------
 
@@ -130,10 +141,10 @@ if (error.fetch) {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {contact.name
+                        {(contact.first_name+" "+contact.last_name)
                           ?.split(" ")
                           .map((n) => n[0])
-                          .join("") || "?"}
+                          .join("").toUpperCase() || "?"}
                       </div>
                       <div className="font-medium text-gray-900">
                         {contact.first_name+ " "+ contact.last_name || "Unnamed Contact"}
@@ -151,6 +162,7 @@ if (error.fetch) {
 
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {contact.id}
+                    {/* <ContactActivityLog/> */}
                   </td>
 
                   <td className="px-6 py-4">
@@ -162,6 +174,23 @@ if (error.fetch) {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+
+             {/* edit */}
+                       {/* <button
+                    className="p-2 rounded-lg hover:bg-blue-100 text-blue-600">
+                    <Pencil size={16} />
+                  </button> */}
+
+                        <CustomButton leftIcon={<Pencil size={16}/>} className="text-blue-400 px-0 m-0" variant=""
+          onClick={()=>openModal({
+            title:"Update Contact",
+            size:"xl",
+            content:<ContactForm editContact={contact} closeModal={closeModal}/>,
+           })}
+          >
+          
+        </CustomButton>
+
 
                       <button
                         onClick={() => handleCall(contact)}
