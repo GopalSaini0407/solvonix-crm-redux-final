@@ -43,9 +43,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
 
-  const { handleLogout } = useAuth()
-
-  const {user}=useSelector((state)=>state.auth)
+  const { handleLogout,user } = useAuth()
 
   console.log(user?.data?.name);
 

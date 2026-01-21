@@ -33,13 +33,13 @@ const Modal = ({
         max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b px-6 py-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 shrink-0">
           <h2 className="text-lg font-semibold text-gray-800">
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="rounded-full p-1 text-gray-500 hover:bg-gray-100"
+            className="rounded-full p-1 text-red-500 hover:text-red-700 cursor-pointer"
           >
             <X size={20} />
           </button>

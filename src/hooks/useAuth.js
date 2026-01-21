@@ -1,17 +1,26 @@
-import { useSelector, useDispatch } from "react-redux"
-import { logout } from "../features/auth/authSlice"
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const useAuth = () => {
-  const dispatch = useDispatch()
-  const { token } = useSelector((state) => state.auth)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const isAuthenticated = !!token
+  const { token, user } = useSelector((state) => state.auth);
+
+  const isAuthenticated = !!token;
 
   const handleLogout = () => {
-    dispatch(logout())
-  }
+    dispatch(logout());
+    navigate("/login");
+  };
 
-  return { token, isAuthenticated, handleLogout }
-}
+  return {
+    token,
+    user,
+    isAuthenticated,
+    handleLogout,
+  };
+};
 
-export default useAuth
+export default useAuth;

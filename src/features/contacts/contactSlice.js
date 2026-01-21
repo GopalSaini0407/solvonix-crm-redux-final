@@ -51,7 +51,7 @@ import contactService from "./contactService";
 
    })
 
-   export const fetchContactActivityLog=createAsyncThunk("contacts/contactActivityLog",async(contactId,thunkAPI)=>
+   export const fetchContactActivityLog=createAsyncThunk("contacts/fetchContactActivityLog",async(contactId,thunkAPI)=>
 {
     try {
         return await contactService.contactActivityLog(contactId);
@@ -70,7 +70,7 @@ import contactService from "./contactService";
     },
         fields:{},
         fieldValues:{},
-        activityLog:[],
+        activities:[],
         loading: {
             fetch: false,
             create: false,
@@ -101,6 +101,9 @@ import contactService from "./contactService";
         resetFieldValues: (state) => {
       state.fieldValues = {};
     },
+    clearContactActivity(state) {
+        state.activities = [];
+      },
     },
     extraReducers:(builder)=>{
         builder
@@ -136,7 +139,7 @@ import contactService from "./contactService";
         })
         .addCase(addContact.rejected,(state,action)=>{
             state.loading.create=false;
-            state.error.create=action.payload;
+            state.error.create=action.payload?.data || action.payload?.message;
         })
 
         // update contact
@@ -152,7 +155,7 @@ import contactService from "./contactService";
         })
         .addCase(updateContact.rejected,(state,action)=>{
             state.loading.update=false;
-            state.error.update=action.payload;
+            state.error.update=action.payload?.data || action.payload?.message;
         })
 
         // delete contact
@@ -176,11 +179,11 @@ import contactService from "./contactService";
            })
            .addCase(fetchContactActivityLog.fulfilled, (state, action) => {
              state.loading.log = false;
-             state.activityLog = action.payload.data; // backend se return array of logs
+             state.activities = action.payload?.data; // backend se return array of logs
            })
            .addCase(fetchContactActivityLog.rejected, (state, action) => {
              state.loading.log = false;
-             state.error.log = action.payload;
+             state.error.log = action.payload?.data;
            })
         // fetchContactFields
 

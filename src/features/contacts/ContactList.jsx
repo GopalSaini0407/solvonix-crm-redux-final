@@ -19,7 +19,7 @@ import CustomButton from "../../components/ui/CustomButton";
 import {exportToCSV} from "../../utils/exportCSV";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
-import ContactActivityLog from "./ContactActivityLog";
+import ViewContactDetails from "./ViewContactDetails";
 
 const ContactList = () => {
   const dispatch = useDispatch();
@@ -141,7 +141,9 @@ if (error.fetch) {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {(contact.first_name+" "+contact.last_name)
+                        {
+                        // (contact.first_name+" "+contact.last_name)
+                        (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed Contact")
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("").toUpperCase() || "?"}
@@ -162,39 +164,41 @@ if (error.fetch) {
 
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {contact.id}
-                    {/* <ContactActivityLog/> */}
                   </td>
 
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
+                     
+                      {/* view contact details */}
                       <button
-                        onClick={() => handleContactClick(contact)}
-                        className="text-blue-600 hover:text-blue-700"
+                        onClick={()=>openModal({
+                          title:"View Contact Details",
+                          size:"xl",
+                          content:<ViewContactDetails contact={contact} closeModal={closeModal}/>,
+                         })}
+
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 p-1 rounded-lg cursor-pointer"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+               
 
              {/* edit */}
-                       {/* <button
-                    className="p-2 rounded-lg hover:bg-blue-100 text-blue-600">
+                       <button
+                       onClick={()=>openModal({
+                        title:"Update Contact",
+                        size:"xl",
+                        content:<ContactForm editContact={contact} closeModal={closeModal}/>,
+                       })}
+                    className="p-1 rounded-lg hover:bg-blue-100 text-blue-600 cursor-pointer">
                     <Pencil size={16} />
-                  </button> */}
-
-                        <CustomButton leftIcon={<Pencil size={16}/>} className="text-blue-400 px-0 m-0" variant=""
-          onClick={()=>openModal({
-            title:"Update Contact",
-            size:"xl",
-            content:<ContactForm editContact={contact} closeModal={closeModal}/>,
-           })}
-          >
-          
-        </CustomButton>
+                  </button>
 
 
                       <button
                         onClick={() => handleCall(contact)}
-                        className="text-green-600 hover:text-green-700"
+                        className="text-green-600 hover:text-green-700 p-1"
                         title="Call"
                       >
                         <Phone className="w-4 h-4" />
@@ -202,7 +206,7 @@ if (error.fetch) {
 
                       <button
                         onClick={() => handleEmail(contact)}
-                        className="text-blue-600 hover:text-blue-700"
+                        className="text-blue-600 hover:text-blue-700 p-1"
                         title="Email"
                       >
                         <Mail className="w-4 h-4" />
@@ -210,7 +214,7 @@ if (error.fetch) {
 
                       <button
                         onClick={() => handleDeleteContact(contact.id)}
-                        className="text-red-400 hover:text-red-600"
+                        className="text-red-400 hover:text-red-600 p-1 cursor-pointer rounded-lg"
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
