@@ -1,0 +1,123 @@
+/* Available master list (left column) */
+export const availableFieldData = [
+    {
+      key: "Text",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "String",
+      display_text: "",
+      field_group: "",
+      placeholder: "",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Large Text",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "LargeText",
+      display_text: "",
+      field_group: "",
+      placeholder: "",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "List",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "List",
+      display_text: "",
+      field_group: "",
+      placeholder: "",
+      field_options: "Option 1, Option 2, Option 3",
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Date",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "Date",
+      display_text: "",
+      field_group: "",
+      placeholder: "",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Date Time",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "DateTime",
+      display_text: " ",
+      field_group: "",
+      placeholder: "",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Integer",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "Integer",
+      display_text: "",
+      field_group: "",
+      placeholder: "",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Decimal",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "Decimal",
+      display_text: " ",
+      field_group: "",
+      placeholder: " ",
+      field_options: null,
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "File",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "File",
+      display_text: " ",
+      field_group: "",
+      placeholder: "",
+      field_options: "",
+      priority: 1,
+      is_required: 0,
+      is_email: 0
+    },
+    {
+      key: "Options",
+      field_name: "",
+      field_for: "Contacts",
+      field_type: "Options",
+      display_text: " ",
+      field_group: "",
+      placeholder: "",
+      field_options: "Option 1, Option 2",
+      priority: 1,
+      is_required: 0,
+      is_email: 0,
+      is_multiple:null
+    },
+  
+  ];
+  

@@ -1,7 +1,7 @@
 import api from "../../app/api";
 
 const fetchCustomField=async()=>{
-      const res=await api.get('/get/contacts/fields')
+      const res=await api.get('user/get/contacts/fields')
       return res.data;
 }
 
