@@ -34,7 +34,7 @@ const {openModal,closeModal}=useModal();
                     onClick={()=>openModal({
                         title:"add field",
                         size:"lg",
-                        content:<CustomFieldForm field={f} closeModal={closeModal}/>
+                        content:<CustomFieldForm fieldData={f} closeModal={closeModal}/>
                     })}
                   >
                     <Plus className="w-4 h-4" />

@@ -2,16 +2,27 @@ import { FaEdit } from "react-icons/fa";
 import { useDispatch,useSelector } from "react-redux";
 import {fetchCustomField} from "./customFieldSlice";
 import { useEffect } from "react";
+import Loader from "../../components/ui/Loader";
 
 const ViewFieldList=()=>{
 const dispatch=useDispatch();
 const {customFields,error,loading}=useSelector((state)=>state.customFields);
 
-console.log(customFields);
 
 useEffect(()=>{
 dispatch(fetchCustomField())
 },[dispatch])
+
+  // ---------------- UI ----------------
+
+  if (loading.fetch){
+     return ( <Loader text="Field loading..." size="lg"/> )
+  } 
+
+// 🔹 Error
+if (error.fetch) {
+  console.log(error);
+}
 
 return(
 <>
