@@ -1,13 +1,17 @@
 import { FaEdit } from "react-icons/fa";
 import { useDispatch,useSelector } from "react-redux";
 import {fetchCustomField} from "./customFieldSlice";
+import CustomFieldForm from './CustomFieldForm';
 import { useEffect } from "react";
+import { useModal } from '../../context/ModalContext';
 import Loader from "../../components/ui/Loader";
 
 const ViewFieldList=()=>{
+   const {openModal,closeModal}=useModal();
 const dispatch=useDispatch();
 const {customFields,error,loading}=useSelector((state)=>state.customFields);
 
+console.log(customFields)
 
 useEffect(()=>{
 dispatch(fetchCustomField())
@@ -47,7 +51,14 @@ return(
                {field.display_text} {" "}
                <small className="text-xs text-gray-400">(P :{field.priority})</small>
                </span>
-               <button className="text-blue-500 hover:text-blue-700 transition">
+               <span>{field.is_email}</span>
+               <button className="text-blue-500 hover:text-blue-700 transition"
+                    onClick={()=>openModal({
+                        title:"add field",
+                        size:"lg",
+                        content:<CustomFieldForm fieldData={field} closeModal={closeModal}/>
+                    })}
+               >
                   <FaEdit />
                </button>
             </li>
@@ -57,24 +68,7 @@ return(
       </div>
       ))
       }
-      <div className="bg-white shadow-sm rounded-2xl border border-gray-100 p-5 hover:shadow-md transition min-h-[200px]">
-         <h3 className="text-lg font-semibold text-blue-600 mb-3 border-b pb-2">
-            group name
-         </h3>
-         <ul className="space-y-2">
-            <li 
-               className="flex items-center justify-between text-gray-700 border p-2 border-gray-100 rounded bg-gray-50 hover:bg-gray-100 transition"
-               >
-               <span>
-               display text {" "}
-               <small className="text-xs text-gray-400">(P :1)</small>
-               </span>
-               <button className="text-blue-500 hover:text-blue-700 transition">
-                  <FaEdit />
-               </button>
-            </li>
-         </ul>
-      </div>
+     
    </div>
 </div>
 </>

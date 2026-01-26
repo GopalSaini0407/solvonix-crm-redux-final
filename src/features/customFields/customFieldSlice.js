@@ -86,11 +86,21 @@ const customFieldSlice=createSlice({
         state.loading.create=true;
         state.error.create=null;
     })
-    .addCase(addCustomField.fulfilled,(state,action)=>{
-      state.loading.create=false;
-      state.customFields.push(action.payload?.data);
-      state.error.create=null
-    })
+   .addCase(addCustomField.fulfilled, (state, action) => {
+  state.loading.create = false;
+
+  const newField = action.payload?.data;
+  const group = newField.field_group;
+
+  // agar group exist nahi karta
+  if (!state.customFields[group]) {
+    state.customFields[group] = [];
+  }
+
+  state.customFields[group].push(newField);
+  state.error.create = null;
+})
+
     .addCase(addCustomField.rejected,(state,action)=>{
         state.loading.create=false;
         state.error.create=action.payload;
@@ -103,15 +113,42 @@ const customFieldSlice=createSlice({
     state.loading.update=true;
     state.error.update=null;
     })
-    .addCase(updateCustomField.fulfilled,(state,action)=>{
-      state.loading.update=false;
-      const updated=action.payload?.data || action.payload;
-      const index=state.customFields.findIndex((field)=>field.id===updated.id);
-      if(index!==-1){
-        state.customFields[index]=updated;
-      }
-      state.error.update=null;
-    })
+   .addCase(updateCustomField.fulfilled, (state, action) => {
+  state.loading.update = false;
+
+  const updatedField = action.payload?.data || action.payload;
+  const newGroup = updatedField.field_group;
+
+  let oldGroup = null;
+  let oldIndex = -1;
+
+  // old group dhundho
+  for (const group in state.customFields) {
+    const idx = state.customFields[group].findIndex(
+      field => field.id === updatedField.id
+    );
+    if (idx !== -1) {
+      oldGroup = group;
+      oldIndex = idx;
+      break;
+    }
+  }
+
+  // remove from old group
+  if (oldGroup !== null) {
+    state.customFields[oldGroup].splice(oldIndex, 1);
+  }
+
+  // add to new group
+  if (!state.customFields[newGroup]) {
+    state.customFields[newGroup] = [];
+  }
+
+  state.customFields[newGroup].push(updatedField);
+
+  state.error.update = null;
+})
+
     .addCase(updateCustomField.rejected,(state,action)=>{
         state.loading.update=false;
         state.error.update=action.payload;
