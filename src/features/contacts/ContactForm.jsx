@@ -81,7 +81,7 @@ const ContactForm = ({  editContact = null,closeModal }) => {
     }
   };
 
-  if (loading.fetch) return <p>Loading...</p>;
+  if (loading.fetchFeids) return <p>Loading...</p>;
  
  
   return (
@@ -96,12 +96,16 @@ const ContactForm = ({  editContact = null,closeModal }) => {
         </div>
       )}
 
-      {Object.entries(fields || {}).map(([group, groupFields]) => (
-        <div key={group} className="mb-6 border border-gray-200 rounded">
+      {Object.entries(fields || {}).map(([group, groupFields]) => {
+
+         const sortedFields=[...groupFields].sort((a,b)=>(a.priority ?? 999)-(b.priority ?? 99));
+
+         return (
+<div key={group} className="mb-6 border border-gray-200 rounded">
           <div className="bg-gray-100 px-4 py-2 font-semibold">{group}</div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-            {groupFields.filter((field)=>{
+            {sortedFields.filter((field)=>{
               
               if(!editContact) return true;
 
@@ -132,7 +136,9 @@ const ContactForm = ({  editContact = null,closeModal }) => {
             ))}
           </div>
         </div>
-      ))}
+         )
+        
+})}
 
       <div className="text-right">
         <button

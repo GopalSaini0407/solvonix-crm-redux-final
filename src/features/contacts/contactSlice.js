@@ -74,6 +74,7 @@ import contactService from "./contactService";
         loading: {
             fetch: false,
             create: false,
+            fetchFeids:false,
             update: false,
             delete:false,
             log:false
@@ -81,6 +82,7 @@ import contactService from "./contactService";
           error: {
             fetch: null,
             create: null,
+            fetchFeids:null,
             update: null,
             delete:null,
             log:null
@@ -166,7 +168,7 @@ import contactService from "./contactService";
         })
         .addCase(deleteContact.fulfilled,(state,action)=>{
             state.loading.delete=false;
-           state.contacts=state.contacts.filter((contact)=>contact.id!==action.payload?.data); 
+           state.contacts=state.contacts.filter((contact)=>contact.id!==action.payload); 
         })
         .addCase(deleteContact.rejected,(state,action)=>{
             state.loading.delete=false;
@@ -188,16 +190,16 @@ import contactService from "./contactService";
         // fetchContactFields
 
         .addCase(fetchContactFields.pending,(state)=>{
-         state.loading.fetch=true;
-         state.error.fetch=null;
+         state.loading.fetchFeids=true;
+         state.error.fetchFeids=null;
         })
         .addCase(fetchContactFields.fulfilled,(state,action)=>{
-            state.loading.fetch=false;
+            state.loading.fetchFeids=false;
             state.fields=action.payload.data;
         })
         .addCase(fetchContactFields.rejected,(state,action)=>{
-            state.loading.fetch=false;
-            state.error.fetch=action.payload;
+            state.loading.fetchFeids=false;
+            state.error.fetchFeids=action.payload;
         })
 
     }

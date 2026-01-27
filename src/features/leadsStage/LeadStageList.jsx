@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Pencil,
   Trash2,
@@ -10,22 +9,23 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import ReusableDragDropList from "../../components/shared/ReusableDragDropList";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchLeadStage,
   changeLeadStagePriority,
+  reorderLeadStages,
 } from "./leadStageSlice";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
 import CustomButton from "../../components/ui/CustomButton";
 import AddLeadStage from "./AddLeadStage";
-import { useModal } from "../../context/ModalContext";
 import UpdateLeadStage from "./UpdateLeadSage";
 import LeadStagePrev from "./LeadStagePrev";
+import { useModal } from "../../context/ModalContext";
+import PriorityDragDrop from "../../components/shared/PriorityDragDrop";
 
 const LeadStageList = () => {
-  const [stages, setStages] = useState([]);
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
 
@@ -37,63 +37,92 @@ const LeadStageList = () => {
     dispatch(fetchLeadStage());
   }, [dispatch]);
 
-  useEffect(() => {
-    setStages(leadStages);
-  }, [leadStages]);
+  // 🔹 DRAG & DROP
+  const handleDragEnd = ({ source, destination }) => {
+    if (!destination) return;
 
-  const persistPriority = async (orderedStages) => {
-    try {
-      for (let i = 0; i < orderedStages.length; i++) {
-        await dispatch(
-          changeLeadStagePriority({
-            leadStageId: orderedStages[i].id,
-            data: { priority: i + 1 },
-          })
-        ).unwrap();
-      }
-      dispatch(fetchLeadStage());
-    } catch (err) {
-      console.error("Priority update failed", err);
-      dispatch(fetchLeadStage());
-    }
+    const items = Array.from(leadStages);
+    const [moved] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, moved);
+
+    const updated = items.map((item, i) => ({
+      ...item,
+      priority: i + 1,
+    }));
+    console.log(updated,"normal")
+
+    // ✅ optimistic redux update
+    dispatch(reorderLeadStages(updated));
+
+    // ✅ backend sync
+    updated.forEach((stage) => {
+      dispatch(
+        changeLeadStagePriority({
+          leadStageId: stage.id,
+          data: { priority: stage.priority },
+        })
+      );
+    });
   };
 
-  const changePriority = async (newOrder) => {
-    if (!newOrder || newOrder.length === 0) return;
-    setStages(newOrder);
-    await persistPriority(newOrder);
+  // 🔼 Move Up
+  const moveUp = (index) => {
+    if (index === 0) return;
+
+    const items = [...leadStages];
+    [items[index - 1], items[index]] = [items[index], items[index - 1]];
+
+    const updated = items.map((item, i) => ({
+      ...item,
+      priority: i + 1,
+    }));
+    console.log(updated,"up move")
+
+    dispatch(reorderLeadStages(updated));
+
+    updated.forEach((stage) => {
+      dispatch(
+        changeLeadStagePriority({
+          leadStageId: stage.id,
+          data: { priority: stage.priority },
+        })
+      );
+    });
   };
 
-  const moveUpStage = async (index) => {
-    if (index <= 0) return;
-    const newOrder = [...stages];
-    [newOrder[index - 1], newOrder[index]] = [
-      newOrder[index],
-      newOrder[index - 1],
-    ];
-    setStages(newOrder);
-    await persistPriority(newOrder);
-  };
+  // 🔽 Move Down
+  const moveDown = (index) => {
+    if (index === leadStages.length - 1) return;
 
-  const moveDownStage = async (index) => {
-    if (index >= stages.length - 1) return;
-    const newOrder = [...stages];
-    [newOrder[index], newOrder[index + 1]] = [
-      newOrder[index + 1],
-      newOrder[index],
-    ];
-    setStages(newOrder);
-    await persistPriority(newOrder);
+    const items = [...leadStages];
+    [items[index], items[index + 1]] = [items[index + 1], items[index]];
+
+    const updated = items.map((item, i) => ({
+      ...item,
+      priority: i + 1,
+    }));
+    console.log(updated,"down move")
+
+    dispatch(reorderLeadStages(updated));
+
+    updated.forEach((stage) => {
+      dispatch(
+        changeLeadStagePriority({
+          leadStageId: stage.id,
+          data: { priority: stage.priority },
+        })
+      );
+    });
   };
 
   if (loading.fetch) {
-    return <Loader text="Loading LeadStage..." size="lg" />;
+    return <Loader text="Loading Lead Stages..." size="lg" />;
   }
 
   if (error.fetch) {
     return (
       <ErrorState
-        title="failed to load lead stage"
+        title="Failed to load lead stages"
         message={error.fetch}
         onRetry={() => dispatch(fetchLeadStage())}
       />
@@ -101,7 +130,7 @@ const LeadStageList = () => {
   }
 
   const toggleActive = (id) => {
-    alert("active call", id);
+    alert("toggle active", id);
   };
 
   return (
@@ -119,62 +148,63 @@ const LeadStageList = () => {
               })
             }
           >
-            add stage
+            Add Stage
           </CustomButton>
         </h1>
 
-        <ReusableDragDropList
-          items={stages || []}
-          onChange={changePriority}
+        <PriorityDragDrop
+          grouped={false}
+          data={leadStages}
+          onDragEnd={handleDragEnd}
+          getItemId={(item) => item.id.toString()}
           renderItem={(item) => {
-            const index = stages.findIndex((s) => s.id === item.id);
+              const index=leadStages.findIndex((i)=>i.id===item.id);
 
-            return (
-              <div className="flex items-center justify-between w-full">
+              return(
+                <div className="flex items-center justify-between p-4 border rounded-xl bg-white hover:bg-gray-50">
                 <div className="flex items-center gap-4">
                   <span
-                    className="w-5 h-5 rounded-full"
+                    className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: item.color_code }}
                   />
-
+  
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-gray-800">
                         {item.stage_name}
                       </h3>
-
+  
                       {item.is_default === 1 && (
                         <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
                           <Star size={12} /> Default
                         </span>
                       )}
                     </div>
-
+  
                     <p className="text-xs text-gray-500 mt-1">
-                      Priority: {index + 1}
+                      Priority: {item.priority}
                     </p>
                   </div>
                 </div>
-
+  
                 <div className="flex items-center gap-2">
+                  {/* Move buttons */}
                   <button
-                    onClick={() => moveUpStage(index)}
+                    onClick={() => moveUp(index)}
                     disabled={index === 0}
-                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40"
-                    title="Move Up"
+                    className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-40"
                   >
                     <ArrowUp size={16} />
                   </button>
-
+  
                   <button
-                    onClick={() => moveDownStage(index)}
-                    disabled={index === stages.length - 1}
-                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 disabled:opacity-40"
-                    title="Move Down"
+                    onClick={() => moveDown(index)}
+                    disabled={index === leadStages.length - 1}
+                    className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-40"
                   >
                     <ArrowDown size={16} />
                   </button>
-
+  
                   <button
                     onClick={() => toggleActive(item.id)}
                     className={`p-2 rounded-lg ${
@@ -183,13 +213,9 @@ const LeadStageList = () => {
                         : "text-gray-400 hover:bg-gray-100"
                     }`}
                   >
-                    {item.is_active ? (
-                      <Eye size={18} />
-                    ) : (
-                      <EyeOff size={18} />
-                    )}
+                    {item.is_active ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
-
+  
                   <button
                     className="p-2 rounded-lg hover:bg-blue-100 text-blue-600"
                     onClick={() =>
@@ -207,17 +233,15 @@ const LeadStageList = () => {
                   >
                     <Pencil size={16} />
                   </button>
-
-                  <button className="p-2 rounded-lg hover:bg-red-100 text-red-600">
-                    <Trash2 size={16} />
-                  </button>
                 </div>
               </div>
-            );
+              )
+
+
           }}
         />
 
-        <LeadStagePrev stages={stages} />
+        <LeadStagePrev stages={leadStages} />
       </div>
     </div>
   );

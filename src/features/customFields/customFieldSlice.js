@@ -40,7 +40,7 @@ export const updateCustomFieldPriority=createAsyncThunk("customField/updateCusto
 })
 
 const  initialState={
-    customFields: [],
+    customFields: {},
     loading:{
         fetch:false,
         create:false,
@@ -59,9 +59,20 @@ const  initialState={
 const customFieldSlice=createSlice({
     name:"customFields",
     initialState,
-    reducers:{
-
-    },
+    reducers: {
+        reorderCustomFields(state, action) {
+          const { groupName, updatedFields } = action.payload;
+          state.customFields[groupName] = updatedFields;
+        },
+      
+        moveCustomField(state, action) {
+          const { sourceGroup, destGroup } = action.payload;
+      
+          state.customFields[sourceGroup.name] = sourceGroup.fields;
+          state.customFields[destGroup.name] = destGroup.fields;
+        }
+      },
+      
     extraReducers:(builder)=>
         builder
         
@@ -161,9 +172,8 @@ const customFieldSlice=createSlice({
       state.loading.priority=true;
       state.error.priority=null;
     })
-    .addCase(updateCustomFieldPriority.fulfilled,(state,action)=>{
+    .addCase(updateCustomFieldPriority.fulfilled,(state)=>{
         state.loading.priority=false;
-        state.customFields=action.payload?.data;
         state.error.priority=null;
     })
     .addCase(updateCustomFieldPriority.rejected,(state,action)=>{
@@ -173,5 +183,7 @@ const customFieldSlice=createSlice({
 
 })
 
+export const { reorderCustomFields, moveCustomField } =
+  customFieldSlice.actions;
 
 export default customFieldSlice.reducer;

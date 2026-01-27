@@ -68,7 +68,13 @@ const initialState = {
 const leadStageSlice = createSlice({
   name: 'leadStages',
   initialState,
-  reducers: {},
+  reducers: {
+    
+      reorderLeadStages(state, action) {
+        state.leadStages = action.payload;
+      },
+    
+  },
   extraReducers: (builder) => {
     builder
       // fetch
@@ -134,5 +140,7 @@ const leadStageSlice = createSlice({
       });
   },
 });
+
+export const { reorderLeadStages } = leadStageSlice.actions;
 
 export default leadStageSlice.reducer;
