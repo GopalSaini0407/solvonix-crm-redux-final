@@ -50,7 +50,6 @@ const LeadStageList = () => {
       ...item,
       priority: i + 1,
     }));
-    console.log(updated,"normal")
 
     // ✅ optimistic redux update
     dispatch(reorderLeadStages(updated));
@@ -77,7 +76,6 @@ const LeadStageList = () => {
       ...item,
       priority: i + 1,
     }));
-    console.log(updated,"up move")
 
     dispatch(reorderLeadStages(updated));
 
@@ -102,7 +100,6 @@ const LeadStageList = () => {
       ...item,
       priority: i + 1,
     }));
-    console.log(updated,"down move")
 
     dispatch(reorderLeadStages(updated));
 
@@ -130,27 +127,37 @@ const LeadStageList = () => {
     );
   }
 
-  const toggleActive = (item) => {
-    const newStatus = item.is_active === 1 ? 0 : 1;
-  
-    // 🔥 optimistic UI
-    const updatedStages = leadStages.map(stage =>
-      stage.id === item.id
-        ? { ...stage, is_active: newStatus }
-        : stage
-    );
-  
-    dispatch(reorderLeadStages(updatedStages));
-  
-    // 🔥 same updateLeadStage API
-    dispatch(
-      updateLeadStage({
-        leadStageId: item.id,
-        data: { is_active: newStatus },
-      })
-    );
-  };
-  
+const toggleActive = (item) => {
+  const newStatus = item.is_active === 1 ? 0 : 1;
+
+  // optimistic UI
+  const updatedStages = leadStages.map(stage =>
+    stage.id === item.id
+      ? { ...stage, is_active: newStatus }
+      : stage
+  );
+  dispatch(reorderLeadStages(updatedStages));
+
+  dispatch(
+    updateLeadStage({
+      leadStageId: item.id,
+      data: {
+        stage_name: item.stage_name,
+        priority: item.priority,
+        is_default: item.is_default,
+        color_code: item.color_code,
+        is_active: newStatus, // number hi bhejo
+      },
+    })
+  )
+  .unwrap()
+  .catch(() => {
+    // rollback on failure
+    dispatch(reorderLeadStages(leadStages));
+  });
+};
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <div className="max-w-4xl mx-auto space-y-10">
