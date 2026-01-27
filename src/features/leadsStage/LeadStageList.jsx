@@ -15,6 +15,7 @@ import {
   fetchLeadStage,
   changeLeadStagePriority,
   reorderLeadStages,
+  updateLeadStage
 } from "./leadStageSlice";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
@@ -129,10 +130,27 @@ const LeadStageList = () => {
     );
   }
 
-  const toggleActive = (id) => {
-    alert("toggle active", id);
+  const toggleActive = (item) => {
+    const newStatus = item.is_active === 1 ? 0 : 1;
+  
+    // 🔥 optimistic UI
+    const updatedStages = leadStages.map(stage =>
+      stage.id === item.id
+        ? { ...stage, is_active: newStatus }
+        : stage
+    );
+  
+    dispatch(reorderLeadStages(updatedStages));
+  
+    // 🔥 same updateLeadStage API
+    dispatch(
+      updateLeadStage({
+        leadStageId: item.id,
+        data: { is_active: newStatus },
+      })
+    );
   };
-
+  
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <div className="max-w-4xl mx-auto space-y-10">
@@ -206,7 +224,7 @@ const LeadStageList = () => {
                   </button>
   
                   <button
-                    onClick={() => toggleActive(item.id)}
+                    onClick={() => toggleActive(item)}
                     className={`p-2 rounded-lg ${
                       item.is_active
                         ? "text-green-600 hover:bg-green-100"
