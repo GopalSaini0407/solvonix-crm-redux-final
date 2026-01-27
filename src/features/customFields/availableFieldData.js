@@ -11,6 +11,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -24,6 +25,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -37,6 +39,7 @@ export const availableFieldData = [
       field_options: "Option 1, Option 2, Option 3",
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -50,6 +53,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -63,6 +67,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -76,6 +81,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -89,6 +95,7 @@ export const availableFieldData = [
       field_options: null,
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -102,6 +109,7 @@ export const availableFieldData = [
       field_options: "",
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0
     },
     {
@@ -115,6 +123,7 @@ export const availableFieldData = [
       field_options: "Option 1, Option 2",
       priority: 1,
       is_required: 0,
+      is_active:0,
       is_email: 0,
       is_multiple:null
     },

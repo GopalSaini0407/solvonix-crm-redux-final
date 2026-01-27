@@ -6,10 +6,11 @@ import {
   fetchCustomField
 } from "./customFieldSlice";
 
+import { useModal } from "../../context/ModalContext";
+
 const CustomFieldForm = ({ fieldData = {} }) => {
   const dispatch = useDispatch();
-console.log(fieldData,"before")
-
+const {closeModal}=useModal()
   const isEditMode = Boolean(fieldData?.id);
   // 🧠 initial state
  const [field, setField] = useState({
@@ -17,6 +18,9 @@ console.log(fieldData,"before")
   is_multiple: 0,
   is_email: 0,
   is_required: 0,
+  is_active: 0,
+  consent:0,
+
   ...fieldData
 });
 
@@ -34,16 +38,26 @@ const buildPayload = () => {
   payload.is_required = payload.is_required ? 1 : 0;
   payload.is_email = payload.is_email ? 1 : 0;
   payload.is_multiple = payload.is_multiple ? 1 : 0;
+  payload.is_active = payload.is_active ? 1 : 0;
+  payload.consent = payload.consent ? 1 : 0;
 
-  if (payload.field_type === "List" || payload.field_type === "Options") {
-    if (payload.options_mode === "manual") {
-      payload.field_options = payload.field_options
-        ?.split(",")
-        .map(o => o.trim())
-        .filter(Boolean);
+ if (payload.field_type === "List" || payload.field_type === "Options") {
+  if (payload.options_mode === "manual") {
+    const optionsArray = payload.field_options
+      ?.split(",")
+      .map(o => o.trim())
+      .filter(Boolean);
+     console.log(optionsArray,"ram")
+    // 🔥 validate non-empty
+    if (!optionsArray || optionsArray.length === 0) {
+      throw new Error("Manual field options cannot be empty");
     }
-  }
 
+    payload.field_options = optionsArray;
+  }
+}
+
+  payload.consent = payload.consent ?? 0; // 🔥 default 0 if missing
   delete payload.options_mode;
   return payload;
 };
@@ -60,9 +74,11 @@ const buildPayload = () => {
         await dispatch(updateCustomField(payload)).unwrap();
         console.log(payload)
         alert("Field updated successfully");
+        closeModal()
       } else {
         await dispatch(addCustomField(payload)).unwrap();
         alert("Field added successfully");
+        closeModal()
       }
 
       dispatch(fetchCustomField());
@@ -170,6 +186,8 @@ const buildPayload = () => {
             <label className="flex gap-2 items-center">
               <input
                 type="radio"
+                name="optionsMode"
+                value="manual"
                 checked={field.options_mode === "manual"}
                 onChange={() =>
                   setField({
@@ -185,6 +203,8 @@ const buildPayload = () => {
             <label className="flex gap-2 items-center">
               <input
                 type="radio"
+                 name="optionsMode"
+          value="predefined"
                 checked={field.options_mode === "predefined"}
                 onChange={() =>
                   setField({
@@ -260,6 +280,32 @@ const buildPayload = () => {
         />
         <label className="text-sm font-medium">Is Required</label>
       </div>
+{/* is active */}
+   <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={Boolean(field.is_active)}
+          onChange={(e) =>
+  setField({ ...field, is_active: e.target.checked ? 1 : 0 })
+          }
+        />
+        <label className="text-sm font-medium">Is Active</label>
+      </div>
+
+
+{/* Consent */}
+<div className="flex items-center gap-2 mt-2">
+  <input
+    type="checkbox"
+    checked={Boolean(field.consent)}
+    onChange={(e) =>
+      setField({ ...field, consent: e.target.checked ? 1 : 0 })
+    }
+  />
+  <label className="text-sm font-medium">
+    Consent (user permission)
+  </label>
+</div>
 
       {/* Email */}
       {field.field_type === "String" && (

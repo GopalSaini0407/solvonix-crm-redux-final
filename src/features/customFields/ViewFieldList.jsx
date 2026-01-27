@@ -11,7 +11,10 @@ import { useEffect } from "react";
 import { useModal } from "../../context/ModalContext";
 import Loader from "../../components/ui/Loader";
 import PriorityDragDrop from "../../components/shared/PriorityDragDrop";
-
+import {
+  Eye,
+  EyeOff,
+} from "lucide-react";
 const ViewFieldList = () => {
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
@@ -19,6 +22,7 @@ const ViewFieldList = () => {
     (state) => state.customFields
   );
 
+  console.log(customFields);
   useEffect(() => {
     dispatch(fetchCustomField());
   }, [dispatch]);
@@ -106,6 +110,10 @@ const ViewFieldList = () => {
     console.log(error);
   }
 
+  const toggleActive=(field)=>{
+    alert(field.id)
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4">
       <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center gap-2">
@@ -128,9 +136,20 @@ const ViewFieldList = () => {
                 (P : {field.priority})
               </small>
             </span>
-
+            <div>
+   <button
+                    onClick={() => toggleActive(field)}
+                    className={`p-2 rounded-lg cursor-pointer ${
+                      field.is_active
+                        ? "text-green-600 hover:bg-green-100"
+                        : "text-gray-400 hover:bg-gray-100"
+                    }`}
+                  >
+                    {field.is_active ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </button>
+  
             <button
-              className="text-blue-500 hover:text-blue-700"
+              className="text-blue-500 hover:text-blue-700 cursor-pointer ms-2"
               onClick={() =>
                 openModal({
                   title: "Edit Field",
@@ -146,6 +165,8 @@ const ViewFieldList = () => {
             >
               <FaEdit />
             </button>
+            </div>
+           
           </div>
         )}
       />
