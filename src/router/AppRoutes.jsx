@@ -17,6 +17,7 @@ import LeadStageList from "../features/leadsStage/LeadStageList"
 
 // later: Leads, Deals, Dashboard etc.
 import Dashboard from "../pages/Dashboard"
+import SettingsPage from "../pages/Settings"
 
 import CustomField from "../features/customFields/CustomField"
 
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         {/* Default redirect */}
         
   <Route index element={<Dashboard />} />
+  <Route path="settings" element={<SettingsPage />} />
   <Route path="contacts" element={<ContactList />} />
   <Route path="leadstage" element={<LeadStageList />} />
   <Route path="custom-field" element={<CustomField/>}/>

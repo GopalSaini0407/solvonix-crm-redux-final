@@ -60,6 +60,18 @@ import contactService from "./contactService";
     }
 })
 
+export const exportContactCsv = createAsyncThunk(
+    "contacts/exportContactCsv",
+    async ({ filters, contactIds }, thunkAPI) => {
+      try {
+        return await contactService.exportContactCsv(filters, contactIds);
+      } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+      }
+    }
+  );
+  
+
    const initialState={
     contacts:[],
     pagination:{
@@ -77,7 +89,8 @@ import contactService from "./contactService";
             fetchFeids:false,
             update: false,
             delete:false,
-            log:false
+            log:false,
+            export:false,
           },
           error: {
             fetch: null,
@@ -85,7 +98,8 @@ import contactService from "./contactService";
             fetchFeids:null,
             update: null,
             delete:null,
-            log:null
+            log:null,
+            export:null
           }
    }
 
@@ -200,6 +214,21 @@ import contactService from "./contactService";
         .addCase(fetchContactFields.rejected,(state,action)=>{
             state.loading.fetchFeids=false;
             state.error.fetchFeids=action.payload;
+        })
+
+        // export contact CSV
+
+        .addCase(exportContactCsv.pending,(state)=>{
+            state.loading.export=true;
+            state.error.export=null;
+
+        })
+        .addCase(exportContactCsv.fulfilled,(state)=>{
+            state.loading.export = false;
+        })
+        .addCase(exportContactCsv.rejected,(state,action)=>{
+            state.loading.export = false;
+             state.error.export=action.payload;
         })
 
     }

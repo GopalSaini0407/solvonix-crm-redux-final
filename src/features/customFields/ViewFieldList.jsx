@@ -116,7 +116,7 @@ const ViewFieldList = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4">
-      <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+      <h2 className="text-2xl font-bold text-blue-700 mb-3 flex items-center gap-2">
         Dynamic Groups
       </h2>
 
@@ -124,7 +124,7 @@ const ViewFieldList = () => {
         grouped
         data={customFields}
         onDragEnd={handleDragEnd}
-        containerClass="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        containerClass="grid gap-6"
         getItemId={(field, index) =>
           field.id ? field.id.toString() : `field-${index}`
         }

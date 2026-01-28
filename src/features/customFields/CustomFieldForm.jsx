@@ -24,13 +24,14 @@ const {closeModal}=useModal()
   ...fieldData
 });
 
+console.log(fieldData)
 
   const baseClasses =
     "p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none";
 
   // 🔹 Build API payload
 const buildPayload = () => {
-  console.log(field,"after")
+  // console.log(field,"after")
 
   let payload = { ...field };
 
@@ -47,7 +48,7 @@ const buildPayload = () => {
       ?.split(",")
       .map(o => o.trim())
       .filter(Boolean);
-     console.log(optionsArray,"ram")
+    //  console.log(optionsArray,"ram")
     // 🔥 validate non-empty
     if (!optionsArray || optionsArray.length === 0) {
       throw new Error("Manual field options cannot be empty");
@@ -68,7 +69,7 @@ const buildPayload = () => {
     e.preventDefault();
 
     const payload = buildPayload();
-
+     console.log(payload,"before payload")
     try {
       if (isEditMode) {
         await dispatch(updateCustomField(payload)).unwrap();
@@ -77,13 +78,17 @@ const buildPayload = () => {
         closeModal()
       } else {
         await dispatch(addCustomField(payload)).unwrap();
+        console.log(payload,"after payload")
+        console.log(addCustomField,"after add")
         alert("Field added successfully");
+
         closeModal()
       }
 
       dispatch(fetchCustomField());
     } catch (err) {
       alert(err?.message || "Operation failed");
+      console.log(err)
     }
   };
 

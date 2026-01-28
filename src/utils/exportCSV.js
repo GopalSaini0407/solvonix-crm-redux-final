@@ -1,25 +1,30 @@
-export const exportToCSV = ({ data = [], fileName = "export" }) => {
-  if (!data.length) return;
+export const exportCSV = async ({
+  dispatch,
+  action,
+  params = {},
+  fileName = "export.csv",
+  mimeType = "text/csv",
+}) => {
+  try {
+    const result = await dispatch(action(params));
 
-  const headers = Object.keys(data[0]);
+    if (!action.fulfilled.match(result)) {
+      console.error("Export failed", result);
+      return;
+    }
 
-  const csv = [
-    headers.join(","),
-    ...data.map(row =>
-      headers
-        .map(h => `"${row[h] ?? ""}"`)
-        .join(",")
-    ),
-  ].join("\n");
+    const blob = new Blob([result.payload], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
 
-  const blob = new Blob(["\ufeff" + csv], {
-    type: "text/csv;charset=utf-8;",
-  });
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${fileName}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error("Export error", err);
+  }
 };

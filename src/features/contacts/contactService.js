@@ -42,6 +42,28 @@ const contactActivityLog=async(contactId)=>{
     return res.data;
 }
 
+// export contact csv
+
+const exportContactCsv = async (filters = {}, contactIds = []) => {
+  const res = await api.get(
+    "/user/contact/export/csv",
+    {
+      params: {
+        filters: {
+          search: filters.search,
+          status: filters.status,
+          date_from: filters.date_from,
+          date_to: filters.date_to,
+        },
+        contact_ids: JSON.stringify(contactIds), // ⭐ IMPORTANT
+      },
+      responseType: "blob",
+    }
+  );
+
+  return res.data;
+};
+
 
 export default {
     getContacts,
@@ -49,5 +71,6 @@ export default {
     updateContact,
     getContactFields,
     contactActivityLog,
-    deleteContact
+    deleteContact,
+    exportContactCsv
 }

@@ -13,7 +13,7 @@ const PriorityDragDrop = ({
     <DragDropContext onDragEnd={onDragEnd}>
       {grouped ? (
         // 🔹 GROUPED MODE
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Object.entries(data || {}).map(([group, items]) => (
             <Droppable droppableId={group} key={group}>
               {(provided) => (

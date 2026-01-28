@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchContacts,deleteContact } from "./contactSlice";
+import { fetchContacts,deleteContact,exportContactCsv } from "./contactSlice";
 import {
   Eye,
   Phone,
@@ -16,11 +16,10 @@ import {
 import ContactForm from './ContactForm'
 import {useModal} from "../../context/ModalContext";
 import CustomButton from "../../components/ui/CustomButton";
-import {exportToCSV} from "../../utils/exportCSV";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
 import ViewContactDetails from "./ViewContactDetails";
-
+import { exportCSV } from "../../utils/exportCSV";
 const ContactList = () => {
   const dispatch = useDispatch();
   const {openModal,closeModal}=useModal();
@@ -68,6 +67,20 @@ const ContactList = () => {
   }
 };
 
+const handleExportContacts = async () => {
+  await exportCSV({
+    dispatch,
+    action: exportContactCsv,
+    params: {
+      filters: {},       // later search / status yahin aayega
+      contactIds: [],    // selected contacts ke ids
+    },
+    fileName: "contacts.csv",
+    mimeType: "text/csv",
+  });
+};
+
+
 
   // ---------------- UI ----------------
 
@@ -86,12 +99,7 @@ if (error.fetch) {
        <div className="flex justify-end m-3">
          {/* Export Button */}
          <CustomButton
-          onClick={() =>
-            exportToCSV({
-              data: contacts,
-              fileName: "contacts",
-            })
-          }
+          onClick={handleExportContacts}
           variant="border"
           leftIcon={<Download className="w-4 h-4"/>}
           className="me-3"
@@ -149,7 +157,7 @@ if (error.fetch) {
                           .join("").toUpperCase() || "?"}
                       </div>
                       <div className="font-medium text-gray-900">
-                        {contact.first_name+ " "+ contact.last_name || "Unnamed Contact"}
+                        {contact.first_name+ " "+ (contact.last_name || "") || "Unnamed Contact"}
                       </div>
                     </div>
                   </td>
