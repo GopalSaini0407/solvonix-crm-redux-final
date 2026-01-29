@@ -22,7 +22,7 @@ const ViewFieldList = () => {
     (state) => state.customFields
   );
 
-  console.log(customFields);
+  // console.log(customFields);
   useEffect(() => {
     dispatch(fetchCustomField());
   }, [dispatch]);

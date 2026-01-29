@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState,useEffect} from "react";
 import { useDispatch } from "react-redux";
 import {
   addCustomField,
@@ -29,6 +29,15 @@ console.log(fieldData)
   const baseClasses =
     "p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none";
 
+     useEffect(() => {
+    if (Array.isArray(fieldData?.field_options)) {
+      setField(prev => ({
+        ...prev,
+        field_options: fieldData.field_options.join(","),
+        options_mode: "manual"
+      }));
+    }
+  }, [fieldData]);
   // 🔹 Build API payload
 const buildPayload = () => {
   // console.log(field,"after")
@@ -54,7 +63,7 @@ const buildPayload = () => {
       throw new Error("Manual field options cannot be empty");
     }
 
-    payload.field_options = optionsArray;
+    payload.field_options = optionsArray.join(",");
   }
 }
 
@@ -69,7 +78,6 @@ const buildPayload = () => {
     e.preventDefault();
 
     const payload = buildPayload();
-     console.log(payload,"before payload")
     try {
       if (isEditMode) {
         await dispatch(updateCustomField(payload)).unwrap();
