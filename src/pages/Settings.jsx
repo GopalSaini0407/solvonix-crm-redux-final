@@ -15,8 +15,8 @@ import {
 import LeadStages from "../features/leadsStage/LeadStageList"
 import CustomFields from "../features/customFields/CustomField"
 import {useSearchParams,useNavigate} from "react-router-dom"
-// import ThemeSelector from '../contextAPI/contextTheme/ThemeSelector'
-
+import ThemeSelect from '../components/shared/ThemeSelect'
+import Button from '../components/ui/Button'
 export default function SettingsPage() {
 
   const [searchParams,setSearchParams]=useSearchParams()
@@ -90,6 +90,8 @@ export default function SettingsPage() {
             {activeTab === "general" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">General Settings</h2>
+              <ThemeSelect/>
+              <Button/>
               </div>
             )}
 

@@ -1,0 +1,40 @@
+/* DEFAULT (fallback) */
+:root {
+    --color-bg: #ffffff;
+    --color-text: #111827;
+    --color-surface: #f3f4f6;
+    --color-primary: #2563eb;
+  }
+  
+  /* LIGHT */
+  .theme-light {
+    --color-bg: #ffffff;
+    --color-text: #111827;
+    --color-surface: #f3f4f6;
+    --color-primary: #2563eb;
+  }
+  
+  /* DARK */
+  .theme-dark {
+    --color-bg: #0f172a;
+    --color-text: #f8fafc;
+    --color-surface: #1e293b;
+    --color-primary: #38bdf8;
+  }
+  
+  /* BLUE */
+  .theme-blue {
+    --color-bg: #eff6ff;
+    --color-text: #1e3a8a;
+    --color-surface: #dbeafe;
+    --color-primary: #1d4ed8;
+  }
+  
+  /* GREEN */
+  .theme-green {
+    --color-bg: #ecfdf5;
+    --color-text: #065f46;
+    --color-surface: #d1fae5;
+    --color-primary: #059669;
+  }
+  

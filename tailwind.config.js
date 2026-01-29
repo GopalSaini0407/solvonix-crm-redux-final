@@ -11,6 +11,12 @@ export default {
         animation: {
           scaleIn: "scaleIn 0.2s ease-out",
         },
+        colors: {
+          bg: "var(--color-bg)",
+          text: "var(--color-text)",
+          surface: "var(--color-surface)",
+          primary: "var(--color-primary)",
+        },
       },
     },
   };
