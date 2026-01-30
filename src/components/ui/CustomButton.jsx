@@ -25,7 +25,7 @@ const CustomButton=({
     danger:
       "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
     themePrimary:
-    "bg-[#ef6d8d] hover:bg-[#ff3466] text-white px-4 py-2 rounded-lg flex items-center",
+    "bg-(--color-primary) text-(--color-bg) hover:bg-(--color-nav-bg) px-4 py-2 rounded-lg flex items-center",
     border:
       "px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center",
     

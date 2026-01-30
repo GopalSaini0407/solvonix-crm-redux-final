@@ -71,9 +71,9 @@ export default function SettingsPage() {
                 <button
                   key={category.id}
                   onClick={() => handleTabChange(category.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm ${
+                  className={`w-full text-left px-3 py-2 rounded-lg text-(--color-sidebar-text) flex items-center gap-2 text-sm ${
                     activeTab === category.id
-                      ? "bg-(--color-nav-active-bg) text-(--color-nav-active-text) font-medium"
+                      ? "bg-(--color-nav-active-bg) text-white font-medium"
                       : "hover:text-(--color-nav-hover-text) hover:bg-(--color-nav-hover-bg)"
                   }`}
                 >
