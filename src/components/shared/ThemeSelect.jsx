@@ -1,7 +1,21 @@
-import { THEMES, useTheme } from "../../context/theme.context";
+import { useTheme } from "../../context/theme.context";
 
 export default function ThemeSelect() {
   const { theme, applyTheme } = useTheme();
+
+  const THEMES = [
+    { label: "Light", value: "theme-light" },
+    { label: "Dark", value: "theme-dark" },
+    { label: "Blue", value: "theme-blue" },
+    { label: "Green", value: "theme-green" },
+    { label: "Purple", value: "theme-purple" },
+    { label: "Red", value: "theme-red" },
+    { label: "Orange", value: "theme-orange" },
+    { label: "Teal", value: "theme-teal" },
+    { label: "Cyan", value: "theme-cyan" },
+    { label: "Pink", value: "theme-pink" },
+  
+  ];
 
   return (
     <div className="relative inline-block w-48">
