@@ -54,8 +54,8 @@ export default function SettingsPage() {
 
         <div className="flex flex-col lg:flex-row">
           {/* Sidebar */}
-          <div className="w-full lg:w-64 border-gray-300 border-b lg:border-b-0  lg:border-r p-4">
-            <h3 className="font-semibold text-gray-800 mb-4 px-2">Categories</h3>
+          <div className="w-full lg:w-64  border-b lg:border-b-0 bg-(--color-sidebar-bg) border border-(--color-text) lg:border-r p-4">
+            <h3 className="font-semibold text-(--color-text) mb-4 px-2">Categories</h3>
             <div className="space-y-1">
               {[
                 { id: "general", name: "General", icon: Settings },
@@ -73,8 +73,8 @@ export default function SettingsPage() {
                   onClick={() => handleTabChange(category.id)}
                   className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm ${
                     activeTab === category.id
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-(--color-nav-active-bg) text-(--color-nav-active-text) font-medium"
+                      : "hover:text-(--color-nav-hover-text) hover:bg-(--color-nav-hover-bg)"
                   }`}
                 >
                   <category.icon className="w-4 h-4" />

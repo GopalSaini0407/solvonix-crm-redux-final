@@ -1,40 +1,339 @@
-/* DEFAULT (fallback) */
-:root {
-    --color-bg: #ffffff;
-    --color-text: #111827;
-    --color-surface: #f3f4f6;
-    --color-primary: #2563eb;
-  }
-  
-  /* LIGHT */
-  .theme-light {
-    --color-bg: #ffffff;
-    --color-text: #111827;
-    --color-surface: #f3f4f6;
-    --color-primary: #2563eb;
-  }
-  
-  /* DARK */
-  .theme-dark {
-    --color-bg: #0f172a;
-    --color-text: #f8fafc;
-    --color-surface: #1e293b;
-    --color-primary: #38bdf8;
-  }
-  
-  /* BLUE */
-  .theme-blue {
-    --color-bg: #eff6ff;
-    --color-text: #1e3a8a;
-    --color-surface: #dbeafe;
-    --color-primary: #1d4ed8;
-  }
-  
-  /* GREEN */
-  .theme-green {
-    --color-bg: #ecfdf5;
-    --color-text: #065f46;
-    --color-surface: #d1fae5;
-    --color-primary: #059669;
-  }
-  
+/* ================================== */
+/*          LIGHT THEME               */
+/* ================================== */
+.theme-light {
+  --color-bg: #ffffff;
+  --color-text: #111827;
+  --color-surface: #f3f4f6;
+  --color-primary: #2563eb;
+
+  --color-nav-bg: #2563eb;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #3b82f6;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #1d4ed8;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #f3f4f6;
+  --color-sidebar-text: #111827;
+
+  --color-btn-bg: #2563eb;
+  --color-btn-text: #ffffff;
+
+  --color-border: #e5e7eb;
+  --color-table-head: #f3f4f6;
+  --color-form-bg: #ffffff;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #111827;
+  --color-submenu-hover-bg: #2563eb;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #1d4ed8;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          DARK THEME                */
+/* ================================== */
+.theme-dark {
+  --color-bg: #0f172a;
+  --color-text: #f8fafc;
+  --color-surface: #1e293b;
+  --color-primary: #38bdf8;
+
+  --color-nav-bg: #1e293b;
+  --color-nav-text: #e2e8f0;
+  --color-nav-hover-bg: #334155;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #3b82f6;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #1e293b;
+  --color-sidebar-text: #f8fafc;
+
+  --color-btn-bg: #38bdf8;
+  --color-btn-text: #0f172a;
+
+  --color-border: #334155;
+  --color-table-head: #1e293b;
+  --color-form-bg: #1e293b;
+
+  --color-submenu-bg: #1e293b;
+  --color-submenu-text: #f8fafc;
+  --color-submenu-hover-bg: #3b82f6;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #38bdf8;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          BLUE THEME                */
+/* ================================== */
+.theme-blue {
+  --color-bg: #eff6ff;
+  --color-text: #1e3a8a;
+  --color-surface: #dbeafe;
+  --color-primary: #1d4ed8;
+
+  --color-nav-bg: #1e3a8a;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #3b82f6;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #1d4ed8;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #dbeafe;
+  --color-sidebar-text: #1e3a8a;
+
+  --color-btn-bg: #1d4ed8;
+  --color-btn-text: #ffffff;
+
+  --color-border: #93c5fd;
+  --color-table-head: #dbeafe;
+  --color-form-bg: #dbeafe;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #1e3a8a;
+  --color-submenu-hover-bg: #1e3a8a;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #1d4ed8;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          GREEN THEME               */
+/* ================================== */
+.theme-green {
+  --color-bg: #ecfdf5;
+  --color-text: #065f46;
+  --color-surface: #d1fae5;
+  --color-primary: #059669;
+
+  --color-nav-bg: #047857;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #059669;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #065f46;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #d1fae5;
+  --color-sidebar-text: #065f46;
+
+  --color-btn-bg: #059669;
+  --color-btn-text: #ffffff;
+
+  --color-border: #10b981;
+  --color-table-head: #d1fae5;
+  --color-form-bg: #d1fae5;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #065f46;
+  --color-submenu-hover-bg: #059669;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #047857;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          PURPLE THEME              */
+/* ================================== */
+.theme-purple {
+  --color-bg: #f5f3ff;
+  --color-text: #312e81;
+  --color-surface: #ffffff;
+  --color-primary: #7c3aed;
+
+  --color-nav-bg: #5b21b6;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #7c3aed;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #4c1d95;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #ede9fe;
+  --color-sidebar-text: #312e81;
+
+  --color-btn-bg: #7c3aed;
+  --color-btn-text: #ffffff;
+
+  --color-border: #d8b4fe;
+  --color-table-head: #ede9fe;
+  --color-form-bg: #ede9fe;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #312e81;
+  --color-submenu-hover-bg: #7c3aed;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #5b21b6;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          RED THEME                 */
+/* ================================== */
+.theme-red {
+  --color-bg: #fff1f2;
+  --color-text: #7f1d1d;
+  --color-surface: #fee2e2;
+  --color-primary: #dc2626;
+
+  --color-nav-bg: #b91c1c;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #dc2626;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #991b1b;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #fee2e2;
+  --color-sidebar-text: #7f1d1d;
+
+  --color-btn-bg: #dc2626;
+  --color-btn-text: #ffffff;
+
+  --color-border: #fca5a5;
+  --color-table-head: #fee2e2;
+  --color-form-bg: #fee2e2;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #7f1d1d;
+  --color-submenu-hover-bg: #dc2626;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #b91c1c;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          ORANGE THEME              */
+/* ================================== */
+.theme-orange {
+  --color-bg: #fff7ed;
+  --color-text: #7c2d12;
+  --color-surface: #ffedd5;
+  --color-primary: #f97316;
+
+  --color-nav-bg: #c2410c;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #f97316;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #9a3412;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #ffedd5;
+  --color-sidebar-text: #7c2d12;
+
+  --color-btn-bg: #f97316;
+  --color-btn-text: #ffffff;
+
+  --color-border: #fdba74;
+  --color-table-head: #ffedd5;
+  --color-form-bg: #ffedd5;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #7c2d12;
+  --color-submenu-hover-bg: #f97316;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #c2410c;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          TEAL THEME                */
+/* ================================== */
+.theme-teal {
+  --color-bg: #f0fdfa;
+  --color-text: #064e3b;
+  --color-surface: #ccfbf1;
+  --color-primary: #0d9488;
+
+  --color-nav-bg: #0f766e;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #0d9488;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #115e59;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #ccfbf1;
+  --color-sidebar-text: #064e3b;
+
+  --color-btn-bg: #0d9488;
+  --color-btn-text: #ffffff;
+
+  --color-border: #5eead4;
+  --color-table-head: #ccfbf1;
+  --color-form-bg: #ccfbf1;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #064e3b;
+  --color-submenu-hover-bg: #0d9488;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #0f766e;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          CYAN THEME                */
+/* ================================== */
+.theme-cyan {
+  --color-bg: #ecfeff;
+  --color-text: #155e75;
+  --color-surface: #cffafe;
+  --color-primary: #06b6d4;
+
+  --color-nav-bg: #0e7490;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #06b6d4;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #075985;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #cffafe;
+  --color-sidebar-text: #155e75;
+
+  --color-btn-bg: #06b6d4;
+  --color-btn-text: #ffffff;
+
+  --color-border: #67e8f9;
+  --color-table-head: #cffafe;
+  --color-form-bg: #cffafe;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #155e75;
+  --color-submenu-hover-bg: #06b6d4;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #0e7490;
+  --color-submenu-active-text: #ffffff;
+}
+
+/* ================================== */
+/*          PINK THEME                */
+/* ================================== */
+.theme-pink {
+  --color-bg: #fff0f6;
+  --color-text: #831843;
+  --color-surface: #fce7f3;
+  --color-primary: #db2777;
+
+  --color-nav-bg: #EF6D8D;
+  --color-nav-text: #ffffff;
+  --color-nav-hover-bg: #f08aa8;
+  --color-nav-hover-text: #ffffff;
+  --color-nav-active-bg: #db2777;
+  --color-nav-active-text: #ffffff;
+
+  --color-sidebar-bg: #fce7f3;
+  --color-sidebar-text: #831843;
+
+  --color-btn-bg: #db2777;
+  --color-btn-text: #ffffff;
+
+  --color-border: #f9a8d4;
+  --color-table-head: #fce7f3;
+  --color-form-bg: #fce7f3;
+
+  --color-submenu-bg: #ffffff;
+  --color-submenu-text: #831843;
+  --color-submenu-hover-bg: #EF6D8D;
+  --color-submenu-hover-text: #ffffff;
+  --color-submenu-active-bg: #db2777;
+  --color-submenu-active-text: #ffffff;
+}
