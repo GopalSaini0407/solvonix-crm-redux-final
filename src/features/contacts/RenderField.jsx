@@ -1,8 +1,5 @@
-const RenderField = ({ field, value, onChange }) => {
-  const options = field.field_options
-    ? field.field_options.split(",").map((o) => o.trim())
-    : [];
-
+const RenderField = ({ field, value, onChange ,fieldOptions}) => {
+   
   const baseInput =
     "w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
@@ -37,9 +34,9 @@ const RenderField = ({ field, value, onChange }) => {
           onChange={(e) => onChange(e.target.value)}
         >
           <option value="">Select</option>
-          {options.map((opt, i) => (
-            <option key={i} value={opt}>
-              {opt}
+          {fieldOptions.map((opt, i) => (
+            <option key={i} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
@@ -98,29 +95,29 @@ const RenderField = ({ field, value, onChange }) => {
     case "Options":
       return (
         <div className="space-y-2">
-          {options.map((o, i) => (
+          {fieldOptions.map((opt, i) => (
             <label key={i} className="flex items-center gap-2 text-sm">
               <input
                 type={field.is_multiple === 1 ? "checkbox" : "radio"}
                 checked={
                   field.is_multiple === 1
-                    ? (value || []).includes(o)
-                    : value === o
+                    ? (value || []).includes(opt.value)
+                    : value === opt.value
                 }
                 onChange={(e) => {
                   if (field.is_multiple === 1) {
                     const prev = value || [];
                     onChange(
                       e.target.checked
-                        ? [...prev, o]
-                        : prev.filter((v) => v !== o)
+                        ? [...prev, opt.value]
+                        : prev.filter((v) => v !== opt.value)
                     );
                   } else {
-                    onChange(o);
+                    onChange(opt.value);
                   }
                 }}
               />
-              {o}
+              {opt.label}
             </label>
           ))}
         </div>

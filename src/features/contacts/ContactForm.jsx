@@ -83,7 +83,20 @@ const ContactForm = ({  editContact = null,closeModal }) => {
 
   if (loading.fetchFeids) return <p>Loading...</p>;
  
- 
+  // Parse options for dynamic form fields
+  const parseOptions = (optionsString) => {
+    if (!optionsString) return []
+    if (['countries', 'states', 'genders'].includes(optionsString)) {
+      const predefinedLists = {
+        countries: ["United States", "Canada", "UK", "Australia", "Germany", "France", "Japan", "India", "Brazil", "Mexico"],
+        states: ["California", "Texas", "New York", "Florida", "Illinois", "Pennsylvania", "Ohio", "Georgia", "North Carolina", "Michigan"],
+        genders: ["Male", "Female", "Non-binary", "Prefer not to say"]
+      }
+      return predefinedLists[optionsString].map(v => ({ label: v, value: v }))
+    }
+    return optionsString.split(',').map(v => ({ label: v.trim(), value: v.trim() }))
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* <h2 className="text-xl font-bold mb-4">
@@ -131,6 +144,7 @@ const ContactForm = ({  editContact = null,closeModal }) => {
                   field={field}
                   value={fieldValues[field.field_name]}
                   onChange={(value) => handleChange(field, value)}
+                  fieldOptions={parseOptions(field.field_options)}
                 />
               </div>
             ))}
