@@ -6,19 +6,25 @@ const useAuth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { token, user } = useSelector((state) => state.auth);
+  const { token, user,isLoading } = useSelector((state) => state.auth);
 
   const isAuthenticated = !!token;
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async() => {
+   try {
+       await dispatch(logout()).unwrap();
+   } catch (err) {
+    console.error("logout failed:",err);
+   }finally{
     navigate("/login");
+   }
   };
 
   return {
     token,
     user,
     isAuthenticated,
+    isLoading,
     handleLogout,
   };
 };

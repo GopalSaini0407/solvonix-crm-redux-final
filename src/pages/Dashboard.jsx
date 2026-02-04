@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react";
-import { useContext } from "react";
-// import {ThemeContext} from '../contextAPI/contextTheme/ThemeContext';
 
 import {
   TrendingUp,
@@ -35,12 +33,6 @@ import {
 
 const Dashboard = () => {
 
-// const {theme}=useContext(ThemeContext);
-
-// const style={
-//   backgroundColor:theme.background,
-//   color:theme.color,
-// }
 
 
 
@@ -655,7 +647,7 @@ const Dashboard = () => {
               </select>
               <button
                 onClick={() => setIsQuickAddOpen(true)}
-                className="bg-[#ef6d8d] hover:bg-[#ff3466] text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                className="bg-(--color-primary) text-(--color-bg) px-4 py-2 rounded-lg flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Quick Add

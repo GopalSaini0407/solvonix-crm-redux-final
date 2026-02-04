@@ -11,7 +11,8 @@ import {
   User,
   UserPlus,
   Download,
-  Pencil
+  Pencil,
+  Building2,MoreVertical,Edit
 } from "lucide-react";
 import ContactForm from './ContactForm'
 import {useModal} from "../../context/ModalContext";
@@ -20,6 +21,8 @@ import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
 import ViewContactDetails from "./ViewContactDetails";
 import { exportCSV } from "../../utils/exportCSV";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs";
+import {TabsWithUrl} from '../../utils/TabsWithUrl'
 const ContactList = () => {
   const dispatch = useDispatch();
   const {openModal,closeModal}=useModal();
@@ -27,7 +30,7 @@ const ContactList = () => {
   const { contacts, pagination, loading, error } = useSelector(
     (state) => state.contacts
   );
-
+ 
   useEffect(() => {
     dispatch(fetchContacts({ page: pagination.current_page }));
   }, [dispatch]);
@@ -94,11 +97,16 @@ if (error.fetch) {
 }
 
   return (
-    <div className="sm:flex-1 w-full">
+    <div className="max-w-7xl mx-auto min-h-screen bg-gray-50 p-4 md:p-6">
        {/* add contact model btn */}
-       <div className="flex justify-end m-3">
-         {/* Export Button */}
-         <CustomButton
+       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Contacts</h1>
+        <p className="text-gray-600 mt-1">Manage your business relationships</p>
+        </div>
+        <div>
+        {/* Export Button */}
+        <CustomButton
           onClick={handleExportContacts}
           variant="border"
           leftIcon={<Download className="w-4 h-4"/>}
@@ -106,7 +114,7 @@ if (error.fetch) {
         >
           Export
         </CustomButton>
-
+            {/* add contact btn */}
        <CustomButton leftIcon={<UserPlus size={16}/>} variant="themePrimary"
           onClick={()=>openModal({
             title:"add contact",
@@ -116,10 +124,61 @@ if (error.fetch) {
           >
           Add contact
         </CustomButton>
+        </div>
+       
        </div>
-      
+       {/* state */}
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className=" rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center">
+                <User className="w-8 h-8 text-blue-600" />
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">Total Contacts</p>
+                  <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+                </div>
+              </div>
+            </div>
+               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center">
+                <User className="w-8 h-8 text-blue-600" />
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">Total Contacts</p>
+                  <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center">
+                <User className="w-8 h-8 text-blue-600" />
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-600">Total Contacts</p>
+                  <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+                </div>
+              </div>
+            </div>
+            </div>
 
-       {/* add contact model btn close */}
+            <TabsWithUrl defaultValue="table">
+        <TabsList className="flex justify-end mb-3">
+          <TabsTrigger value="table">
+          <div className="w-4 h-4 grid grid-cols-2 gap-0.5 text-gray-400 hover:text-gray-600">
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                    </div>
+          </TabsTrigger>
+          <TabsTrigger value="cards">
+          <div className="w-4 h-4 space-y-1 text-gray-400 hover:text-gray-600">
+                      <div className="bg-current h-0.5 rounded"></div>
+                      <div className="bg-current h-0.5 rounded"></div>
+                      <div className="bg-current h-0.5 rounded"></div>
+                    </div>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="table">
+          {/* contact table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -235,8 +294,86 @@ if (error.fetch) {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+       
+      </div>
+        </TabsContent>
+
+        <TabsContent value="cards">
+          <div className="grid grid-cols-4 gap-4">
+          {
+            contacts.map((contact)=>(
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              <div className="mb-4">
+                <div className="flex justify-between">
+                <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        {
+                        // (contact.first_name+" "+contact.last_name)
+                        (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed Contact")
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("").toUpperCase() || "?"}
+                      </div>
+                     
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">                    
+                     {contact.first_name+ " "+ (contact.last_name || "") || "Unnamed Contact"}
+                    </h3>
+                  </div>
+                </div>
+                <div className="relative group">
+            <button className="text-gray-400 hover:text-gray-600 cursor-pointer">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+            <div className="absolute right-0 top-6 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+              <button
+                onClick={""}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+              >
+                <Eye className="w-4 h-4" />
+                <span>View Details</span>
+              </button>
+              <button
+                onClick={""}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+              >
+                <Edit className="w-4 h-4" />
+                <span>Edit</span>
+              </button>
+              <button
+                onClick={""}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete</span>
+              </button>
+            </div>
+            </div>
+              </div>
+
+                <div className="mt-1">
+                <div className="flex items-center space-x-2 mb-1">
+          <Mail className="w-4 h-4 text-gray-400" />
+          <span className="text-sm text-gray-600">{contact.email}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Phone className="w-4 h-4 text-gray-400" />
+          <span className="text-sm text-gray-600">{contact.mobile}</span>
+        </div>
+                </div>
+              </div>
+            </div>
+            ))
+          }
+      
+          </div>
+      
+    
+        </TabsContent>
+      </TabsWithUrl>
+
+      {/* Pagination */}
+      <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <div className="text-sm text-gray-700">
             Page{" "}
             <span className="font-medium">
@@ -300,7 +437,6 @@ if (error.fetch) {
             </button>
           </div>
         </div>
-      </div>
 
       {contacts.length === 0 && (
         <div className="text-center py-12">

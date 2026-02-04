@@ -10,6 +10,11 @@ const login =async (credential)=>{
     return res.data
 }
 
+const logout=async()=>{
+  const res=await api.get('/user/logout');
+  localStorage.removeItem("access_token")
+   return res.data;
+}
 const register = async (data) => {
     const res = await api.post("/user/register", data)
     return res.data
@@ -18,10 +23,6 @@ const register = async (data) => {
   const profile=async()=>{
     const res=await api.get("/user/profile");
     return res.data
-  }
-
-const logout = () => {
-    localStorage.removeItem("access_token")
   }
 
   export default {

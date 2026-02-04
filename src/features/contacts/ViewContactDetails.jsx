@@ -56,21 +56,6 @@ import {
             </div>
   
             {/* Activity Log */}
-            {/* <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-gray-900">
-                  Activity Log
-                </h3>
-              </div>
-  
-              <div className="text-center py-8">
-                <History className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">
-                  No activity logs found for this contact
-                </p>
-              </div>
-            </div> */}
          <ContactActivityLog contactId={contact.id} limit={3}/>
 
           </div>

@@ -18,6 +18,7 @@ import LeadStageList from "../features/leadsStage/LeadStageList"
 // later: Leads, Deals, Dashboard etc.
 import Dashboard from "../pages/Dashboard"
 import SettingsPage from "../pages/Settings"
+import UserProfile from '../features/profile/UserProfile'
 
 import CustomField from "../features/customFields/CustomField"
 
@@ -46,6 +47,7 @@ const AppRoutes = () => {
   <Route path="contacts" element={<ContactList />} />
   <Route path="leadstage" element={<LeadStageList />} />
   <Route path="custom-field" element={<CustomField/>}/>
+  <Route path="user-profile" element={<UserProfile/>}/>
   <Route path="*" element={<Navigate to="/" replace />} />
 
       </Route>

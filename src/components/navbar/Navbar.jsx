@@ -3,6 +3,7 @@ import { Bars3Icon, BellIcon, XMarkIcon, ChevronDownIcon, EnvelopeIcon } from '@
 import { Fragment, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import React from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', current: false },
@@ -32,7 +33,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Navbar() {
+ function Navbar() {
 
   const { handleLogout, user } = useAuth()
 
@@ -168,7 +169,7 @@ export default function Navbar() {
                   <Menu as="div" className="relative ml-3">
                     <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-(--color-nav-active-bg) text-sm">
                       <img className="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" />
-                      <span className="ml-2 text-(--color-nav-active-text)">{user?.data?.name || "Administrator"}</span>
+                      <span className="ml-2 text-(--color-nav-active-text) outline-none focus:outline-none">{user?.name || "Administrator"}</span>
                       <ChevronDownIcon className="h-4 w-4 ml-1 text-(--color-nav-active-text)" />
                     </Menu.Button>
 
@@ -181,15 +182,17 @@ export default function Navbar() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-(--color-submenu-bg) shadow-lg ring-1 ring-(--color-border)">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-(--color-submenu-bg) shadow-lg outline-none focus:outline-none ring-1 ring-(--color-border)">
                         <Menu.Item>
-                          <Link to="/profile" className="block px-4 py-2 text-sm text-(--color-text)">Your Profile</Link>
+                          <Link to="/user-profile" className="block px-4 py-2 text-sm text-(--color-text)">Your Profile</Link>
                         </Menu.Item>
                         <Menu.Item>
                           <Link to="/settings" className="block px-4 py-2 text-sm text-(--color-text)">Settings</Link>
                         </Menu.Item>
                         <Menu.Item>
-                          <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-(--color-text)">Sign out</button>
+                          <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-(--color-text)">
+                            Sign out
+                            </button>
                         </Menu.Item>
                       </Menu.Items>
                     </Transition>
@@ -234,7 +237,7 @@ export default function Navbar() {
                               key={subItem.label}
                               as={Link}
                               to={subItem.href}
-                              className="block px-3 py-2 rounded text-base hover:bg-(--color-submenu-hover-bg) hover:text-(--color-submenu-hover-text)"
+                              className="block px-3 py-2 rounded text-base bg-(--color-submenu-bg) text-(--color-submenu-text) hover:bg-(--color-submenu-hover-bg) hover:text-(--color-submenu-hover-text)"
                             >
                               {subItem.label}
                             </Disclosure.Button>
@@ -265,15 +268,15 @@ export default function Navbar() {
                 <img className="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" />
 
                 <div className="ml-3">
-                  <div className="text-base font-medium">Administrator</div>
-                  <div className="text-sm font-medium">admin@example.com</div>
+                  <div className="text-base font-medium">{user?.name || "Administrator"}</div>
+                  <div className="text-sm font-medium">{ user?.email || "admin@example.com"}</div>
                 </div>
 
               </div>
 
               <div className="mt-3 space-y-1 px-2">
 
-                <Disclosure.Button as={Link} to="/profile" className="block px-3 py-2 text-base">
+                <Disclosure.Button as={Link} to="/user-profile" className="block px-3 py-2 text-base">
                   Your Profile
                 </Disclosure.Button>
 
@@ -295,3 +298,5 @@ export default function Navbar() {
     </Disclosure>
   )
 }
+
+export default React.memo(Navbar);
