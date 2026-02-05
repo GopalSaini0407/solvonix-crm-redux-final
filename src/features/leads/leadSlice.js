@@ -1,10 +1,10 @@
 import leadService from "./leadService";
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
 
-export const getLeads=createAsyncThunk("leads/getLeads",async(_,thunkAPI)=>{
+export const getLeads=createAsyncThunk("leads/getLeads",async(data,thunkAPI)=>{
 
     try {
-        return await leadService.getLeads();
+        return await leadService.getLeads(data);
     } catch (err) {
         return thunkAPI.rejectWithValue(err.response?.data || err?.message)
     }

@@ -15,8 +15,9 @@ TabsList.displayName = "TabsList";
 export const TabsTrigger = React.forwardRef(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
     ref={ref}
-    className={`px-4 py-2 text-sm cursor-pointer border-b-2 border-transparent 
-    data-[state=active]:bg-(--color-surface) data-[state=active]:font-semibold 
+    className={`px-2 py-2 text-sm cursor-pointer rounded  text-(--color-nav-active-bg)
+    data-[state=active]:bg-(--color-nav-active-bg) data-[state=active]:font-semibold
+   data-[state=active]:text-(--color-nav-hover-text)
     ${className}`}
     {...props}
   />

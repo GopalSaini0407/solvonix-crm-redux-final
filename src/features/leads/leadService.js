@@ -2,7 +2,7 @@ import api from '../../app/api';
 
 
 const getLeads=async()=>{
-  const res=await api.get("/user/leads");
+  const res=await api.post("/user/leads");
   return res.data;
 }
 

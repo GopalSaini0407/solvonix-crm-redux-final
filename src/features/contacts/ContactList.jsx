@@ -12,8 +12,9 @@ import {
   UserPlus,
   Download,
   Pencil,
-  Building2,MoreVertical,Edit
+  Building2,MoreVertical,Edit,Menu
 } from "lucide-react";
+
 import ContactForm from './ContactForm'
 import {useModal} from "../../context/ModalContext";
 import CustomButton from "../../components/ui/CustomButton";
@@ -161,19 +162,10 @@ if (error.fetch) {
             <TabsWithUrl defaultValue="table">
         <TabsList className="flex justify-end mb-3">
           <TabsTrigger value="table">
-          <div className="w-4 h-4 grid grid-cols-2 gap-0.5 text-gray-400 hover:text-gray-600">
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                      <div className="bg-current rounded-sm"></div>
-                    </div>
+                    <MoreVertical size={22} />
           </TabsTrigger>
           <TabsTrigger value="cards">
-          <div className="w-4 h-4 space-y-1 text-gray-400 hover:text-gray-600">
-                      <div className="bg-current h-0.5 rounded"></div>
-                      <div className="bg-current h-0.5 rounded"></div>
-                      <div className="bg-current h-0.5 rounded"></div>
-                    </div>
+                    <Menu size={22} />
           </TabsTrigger>
         </TabsList>
 

@@ -14,7 +14,7 @@ import ProtectedRoute from "./ProtectedRoute"
 // CRM Pages
 import ContactList from "../features/contacts/ContactList"
 import LeadStageList from "../features/leadsStage/LeadStageList"
-
+import LeadList from '../features/leads/LeadList'
 // later: Leads, Deals, Dashboard etc.
 import Dashboard from "../pages/Dashboard"
 import SettingsPage from "../pages/Settings"
@@ -46,6 +46,7 @@ const AppRoutes = () => {
   <Route path="settings" element={<SettingsPage />} />
   <Route path="contacts" element={<ContactList />} />
   <Route path="leadstage" element={<LeadStageList />} />
+  <Route path="leads" element={<LeadList/>}/>
   <Route path="custom-field" element={<CustomField/>}/>
   <Route path="user-profile" element={<UserProfile/>}/>
   <Route path="*" element={<Navigate to="/" replace />} />
