@@ -14,15 +14,16 @@ import {
   Pencil,
   Building2,MoreVertical,Edit,Menu
 } from "lucide-react";
+import { HiOutlineViewGrid } from "react-icons/hi";
 
 import ContactForm from './ContactForm'
 import {useModal} from "../../context/ModalContext";
 import CustomButton from "../../components/ui/CustomButton";
 import Loader from "../../components/ui/Loader";
-import ErrorState from "../../components/ui/ErrorState";
+// import ErrorState from "../../components/ui/ErrorState";
 import ViewContactDetails from "./ViewContactDetails";
 import { exportCSV } from "../../utils/exportCSV";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs";
+import { TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs";
 import {TabsWithUrl} from '../../utils/TabsWithUrl'
 const ContactList = () => {
   const dispatch = useDispatch();
@@ -36,10 +37,6 @@ const ContactList = () => {
     dispatch(fetchContacts({ page: pagination.current_page }));
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   console.log("CONTACT LIST DATA:", contacts);
-  // }, [contacts]);
-  
 
   // ---------------- HANDLERS ----------------
 
@@ -98,7 +95,7 @@ if (error.fetch) {
 }
 
   return (
-    <div className="max-w-7xl mx-auto min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="contact">
        {/* add contact model btn */}
        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
         <div>
@@ -162,7 +159,7 @@ if (error.fetch) {
             <TabsWithUrl defaultValue="table">
         <TabsList className="flex justify-end mb-3">
           <TabsTrigger value="table">
-                    <MoreVertical size={22} />
+                    <HiOutlineViewGrid size={22}/>
           </TabsTrigger>
           <TabsTrigger value="cards">
                     <Menu size={22} />
@@ -201,7 +198,6 @@ if (error.fetch) {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                         {
-                        // (contact.first_name+" "+contact.last_name)
                         (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed Contact")
                           ?.split(" ")
                           .map((n) => n[0])

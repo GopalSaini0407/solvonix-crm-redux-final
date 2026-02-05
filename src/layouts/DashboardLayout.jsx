@@ -20,7 +20,7 @@ const DashboardLayout = () => {
   return (
     <div className="dashboard-layout">
      <Navbar/>
-     <main className="page-content">
+     <main className="page-content max-w-7xl mx-auto min-h-screen bg-gray-50 p-4 md:p-6">
         <Outlet />
       </main>
         {/* FOOTER */}

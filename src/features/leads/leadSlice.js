@@ -1,10 +1,10 @@
 import leadService from "./leadService";
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
 
-export const getLeads=createAsyncThunk("leads/getLeads",async(data,thunkAPI)=>{
+export const getLeads=createAsyncThunk("leads/getLeads",async(params,thunkAPI)=>{
 
     try {
-        return await leadService.getLeads(data);
+        return await leadService.getLeads(params);
     } catch (err) {
         return thunkAPI.rejectWithValue(err.response?.data || err?.message)
     }
@@ -39,6 +39,14 @@ export const deleteLead=createAsyncThunk("leads/deleteLead",async(leadId,thunkAP
 const leadSlice=createSlice({
     name:"leads",
     initialState:{
+        leads:[],
+        pagination:{
+        current_page:1,
+        last_page:1,
+        total:0,
+        per_page:10,
+        },
+
         loading:{
             fetch:false,
             create:false,
@@ -63,7 +71,12 @@ const leadSlice=createSlice({
     })
     .addCase(getLeads.fulfilled,(state,action)=>{
         state.loading.fetch=false;
-        state.leads=action.payload;
+        const pageData=action.payload?.data;
+        state.leads=pageData?.data || [];
+        state.pagination.current_page=pageData?.current_page;
+        state.pagination.last_page=pageData?.last_page;
+        state.pagination.total=pageData?.total;
+        state.pagination.per_page=pageData?.per_page;
     })
     .addCase(getLeads.rejected,(state,action)=>{
         state.loading.fetch=false;

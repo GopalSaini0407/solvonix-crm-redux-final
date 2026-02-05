@@ -1,8 +1,8 @@
 import api from '../../app/api';
 
 
-const getLeads=async()=>{
-  const res=await api.post("/user/leads");
+const getLeads=async(params={})=>{
+  const res=await api.post("/user/leads",params);
   return res.data;
 }
 
