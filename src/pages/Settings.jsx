@@ -10,6 +10,7 @@ import {
   PieChart,
   Users,
   Building,
+  Menu
 } from "lucide-react"
 
 import LeadStages from "../features/leadsStage/LeadStageList"
@@ -26,6 +27,7 @@ export default function SettingsPage() {
 
   const [activeTab, setActiveTab] = useState(urlTab)
   
+  const [sidebar,setSidebar]=useState(false)
 
   useEffect(()=>{
     setSearchParams({tab:activeTab})
@@ -39,22 +41,25 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 md:p-6">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-gray-300">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="p-6 border-b border-gray-300 h-100">
+          <div className="flex items-center justify-between gap-4 overflow-y-auto h-100">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Settings</h1>
               <p className="text-gray-600">Manage your application preferences</p>
             </div>
-            
+            <div className="sm:hidden">
+            <Menu size={24} color="blue" onClick={()=>setSidebar(!sidebar)} />
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row relative h-100">
           {/* Sidebar */}
-          <div className="w-full lg:w-64  border-b lg:border-b-0 bg-(--color-sidebar-bg) border border-(--color-text) lg:border-r p-4">
+         
+          <div className={`w-full lg:w-64 ${sidebar?"absolute":"hidden"} top-0 left-0 z-10 sm:relative sm:block border-b lg:border-b-0 bg-(--color-sidebar-bg) border border-(--color-text) lg:border-r p-4`}>
             <h3 className="font-semibold text-(--color-text) mb-4 px-2">Categories</h3>
             <div className="space-y-1">
               {[

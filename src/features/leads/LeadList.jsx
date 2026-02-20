@@ -30,6 +30,8 @@ const LeadList = () => {
   const { leads, pagination, loading, error } = useSelector(
     (state) => state.leads
   );
+
+  console.log(leads);
  
   useEffect(() => {
     dispatch(getLeads({ page: pagination.current_page }));
@@ -161,7 +163,6 @@ if (error.fetch) {
           </TabsTrigger>
           <TabsTrigger value="cards">
                     <HiOutlineViewGrid size={22}/>
-
           </TabsTrigger>
         </TabsList>
 
@@ -216,28 +217,31 @@ if (error.fetch) {
                       </div>
                     </div>
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {lead.email || "No email"}
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {lead.mobile || "No mobile"}
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {lead.lead_value || "No value"}
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {lead.lead_stage || "no lead stage"}
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {lead.lead_source || "no lead source"}
-
-                  </td>  <td className="px-6 py-4 text-sm text-gray-900">
-                    {lead.created_at || "no lead date"}
+                  </td>  
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    
+                  {lead.created_at ? (
+  <>
+    {new Date(lead.created_at).toLocaleDateString()}{" "}
+    {new Date(lead.created_at).toLocaleTimeString()}
+  </>
+) : (
+  "no lead date"
+)}
                   </td>
                   <td className="px-6 py-4">
                   <div className="relative group">
@@ -290,16 +294,16 @@ if (error.fetch) {
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                         {
                         // (contact.first_name+" "+contact.last_name)
-                        (`${lead.first_name ?? ""} ${lead.last_name ?? ""}`.trim() || "Unnamed Contact")
+                        (`${lead.name ?? ""}`.trim() || "Unnamed Contact")
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("").toUpperCase() || "?"}
                       </div>
                      
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">                    
-                     {lead.first_name+ " "+ (lead.last_name || "") || "Unnamed Contact"}
-                    </h3>
+                    <h5 className="text-sm font-semibold text-gray-900">                    
+                     {lead.name || "Unnamed Contact"}
+                    </h5>
                   </div>
                 </div>
                 <div className="relative group">
@@ -341,6 +345,16 @@ if (error.fetch) {
           <Phone className="w-4 h-4 text-gray-400" />
           <span className="text-sm text-gray-600">{lead.mobile}</span>
         </div>
+        <div className="flex items-center justify-between space-x-2 mb-1">
+          
+
+          <span className="text-sm text-gray-600 my-2 flex">${lead.lead_value}</span>
+          <span className="text-sm text-green-700">{lead.lead_source}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">{lead.message}</span>
+        </div>
+        
                 </div>
               </div>
             </div>
