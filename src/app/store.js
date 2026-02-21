@@ -4,6 +4,7 @@ import contactsReducer from "../features/contacts/contactSlice";
 import leadStageReducer from "../features/leadsStage/leadStageSlice";
 import customFieldReducer from "../features/customFields/customFieldSlice";
 import LeadsReducer from "../features/leads/leadSlice";
+import LeadChannelReducer from "../features/leadChannel/leadChannelSlice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -11,5 +12,6 @@ export const store = configureStore({
     leadStages:leadStageReducer,
     customFields:customFieldReducer,
     leads:LeadsReducer,
+    leadChannel:LeadChannelReducer,
   },
 })

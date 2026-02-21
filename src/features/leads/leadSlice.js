@@ -106,7 +106,7 @@ const leadSlice=createSlice({
     .addCase(updateLead.fulfilled,(state,action)=>{
         state.loading.update=false;
         const updated=action.payload?.data || action.payload;
-        const index=state.leads.findIndex((lead)=>lead.id=updated.id);
+        const index=state.leads.findIndex((lead)=>lead.id===updated.id);
         if(index!==-1){
             state.leads[index]=updated;
         }

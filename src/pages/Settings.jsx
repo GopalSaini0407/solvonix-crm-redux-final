@@ -10,11 +10,13 @@ import {
   PieChart,
   Users,
   Building,
-  Menu
+  Menu,
+  Megaphone
 } from "lucide-react"
 
-import LeadStages from "../features/leadsStage/LeadStageList"
-import CustomFields from "../features/customFields/CustomField"
+import LeadStages from "../features/leadsStage/LeadStageList";
+import CustomFields from "../features/customFields/CustomField";
+import LeadChannel from "../features/leadChannel/LeadChannel";
 import {useSearchParams,useNavigate} from "react-router-dom"
 import ThemeSelect from '../components/shared/ThemeSelect'
 import Button from '../components/ui/Button'
@@ -44,8 +46,8 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-gray-50 md:p-6">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-gray-300 h-100">
-          <div className="flex items-center justify-between gap-4 overflow-y-auto h-100">
+        <div className="p-6 border-b border-gray-300">
+          <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Settings</h1>
               <p className="text-gray-600">Manage your application preferences</p>
@@ -56,7 +58,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row relative h-100">
+        <div className="flex flex-col lg:flex-row relative overflow-auto">
           {/* Sidebar */}
          
           <div className={`w-full lg:w-64 ${sidebar?"absolute":"hidden"} top-0 left-0 z-10 sm:relative sm:block border-b lg:border-b-0 bg-(--color-sidebar-bg) border border-(--color-text) lg:border-r p-4`}>
@@ -68,7 +70,8 @@ export default function SettingsPage() {
                 { id: "localization", name: "Localization", icon: Globe },
                 { id: "features", name: "Features", icon: ToggleLeft },
                 { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
-                { id: "contacts", name: "Contacts", icon: LayoutDashboard },
+                { id: "contacts", name: "Contacts", icon: Users},
+                { id: "lead-channel", name: "LeadChannel", icon: Megaphone },
                 { id: "pipeline", name: "Pipeline", icon: PieChart },
                 { id: "leads", name: "Leads", icon: Users },
                 { id: "accounts", name: "Accounts", icon: Building },
@@ -137,7 +140,15 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
-
+  {/* Dashboard Settings */}
+  {activeTab === "lead-channel" && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Lead Channel Settings</h2>
+                <div className="space-y-6">
+                 <LeadChannel/>
+                </div>
+              </div>
+            )}
             {/* Enhanced Pipeline Settings */}
             {activeTab === "pipeline" && (
                                 <div className="space-y-6">

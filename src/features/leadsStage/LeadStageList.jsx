@@ -186,7 +186,7 @@ const toggleActive = (item) => {
               const index=leadStages.findIndex((i)=>i.id===item.id);
 
               return(
-                <div className="flex items-center justify-between p-4 border rounded-xl bg-white hover:bg-gray-50">
+                <div className="flex items-center justify-between p-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50">
                 <div className="flex items-center gap-4">
                   <span
                     className="w-4 h-4 rounded-full"

@@ -57,7 +57,7 @@ const PriorityDragDrop = ({
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="bg-white border rounded-xl p-4 space-y-2"
+              className="bg-white border border-gray-300 rounded-xl p-4 space-y-2"
             >
               {data
                 .slice()
