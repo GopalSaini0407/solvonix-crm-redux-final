@@ -22,7 +22,8 @@ import Loader from "../../components/ui/Loader";
 // import ErrorState from "../../components/ui/ErrorState";
 // import { exportCSV } from "../../utils/exportCSV";
 import { TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs";
-import {TabsWithUrl} from '../../utils/TabsWithUrl'
+import {TabsWithUrl} from '../../utils/TabsWithUrl';
+import ChannelList from "../leadChannel/ChannelList"
 const LeadList = () => {
   const dispatch = useDispatch();
   // const {openModal,closeModal}=useModal();
@@ -154,6 +155,14 @@ if (error.fetch) {
                 </div>
               </div>
             </div>
+            </div>
+            {/* filter */}
+            <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                <ChannelList/>
+              </div>
+
             </div>
 
             <TabsWithUrl defaultValue="table">

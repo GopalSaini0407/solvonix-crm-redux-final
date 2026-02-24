@@ -74,7 +74,7 @@ const createLeadChannel=createSlice({
     })
     .addCase(addLeadChannel.fulfilled,(state,action)=>{
         state.loading.create=false;
-        state.leadChannel.push(action.payload?.data);
+        // state.leadChannel.push(action.payload?.data);
         state.error.create=null;
     })
     .addCase(addLeadChannel.rejected,(state,action)=>{
@@ -89,11 +89,21 @@ const createLeadChannel=createSlice({
         state.error.update=null;
     })
     .addCase(updateLeadChannel.fulfilled,(state,action)=>{
-        state.loading.update=false;
-        const updated=action.payload?.data;
-        const index=state.leadChannel.findIndex((leadChannel)=>leadChannel.id===updated.id);
-        if(index!==-1){
-            state.leadChannel[index]=action.payload?.data;
+        state.loading.update = false;
+    
+        const updated = action.payload?.data;
+    
+        if (!updated) {
+            console.warn("No updated object returned from API");
+            return;
+        }
+    
+        const index = state.leadChannel.findIndex(
+            (item) => item.id === updated.id
+        );
+    
+        if (index !== -1) {
+            state.leadChannel[index] = updated;
         }
     })
     .addCase(updateLeadChannel.rejected,(state,action)=>{

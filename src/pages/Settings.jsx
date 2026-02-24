@@ -20,6 +20,9 @@ import LeadChannel from "../features/leadChannel/LeadChannel";
 import {useSearchParams,useNavigate} from "react-router-dom"
 import ThemeSelect from '../components/shared/ThemeSelect'
 import Button from '../components/ui/Button'
+import UsersFilterPage from '../components/UsersFilterPage'
+
+
 export default function SettingsPage() {
 
   const [searchParams,setSearchParams]=useSearchParams()
@@ -107,6 +110,7 @@ export default function SettingsPage() {
             {activeTab === "appearance" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Appearance</h2>
+                <UsersFilterPage/>
               </div>
             )}
 

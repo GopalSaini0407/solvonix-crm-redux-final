@@ -10,6 +10,8 @@ import {
   } from "lucide-react";
 import { useModal } from '../../context/ModalContext';
 import AddLeadChannel from './AddLeadChannel';
+import UpdateLeadChannel from './UpdateLeadChannel';
+import Loader from '../../components/ui/Loader';
 
 function LeadChannel() {
 
@@ -19,14 +21,17 @@ function LeadChannel() {
     const { leadChannel, loading, error } = useSelector(
         (state) => state.leadChannel
       );
-          console.log(leadChannel);
 
     useEffect(()=>{
       dispatch(getLeadChannel())
     },[dispatch])
 
+    if (loading.fetch) {
+      return <Loader text="Loading Lead Channels..." size="lg" />;
+    }
   return (
     <div className='lead-channel'>
+     
         <div className="top-box flex justify-between items-center">
             <h1>Lead Channel</h1>
             <CustomButton onClick={()=>openModal({
@@ -49,9 +54,12 @@ function LeadChannel() {
                     >
                         <Eye size={16} className="text-green-500"/>
                         </button>
-                        <button className='btn p-2'
-                        onClick={()=>alert(leadChannel.id)}
-                        >
+
+                          <button onClick={()=>openModal({
+                            title:"Update Lead Source",
+                            size:"md",
+                            content:<UpdateLeadChannel leadChannel={leadChannel} closeModal={closeModal}/>
+                          })}>
                         <Pencil size={16} className="text-blue-500"/>
                         </button>
                     </div>
