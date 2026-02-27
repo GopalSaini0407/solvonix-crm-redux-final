@@ -6,7 +6,7 @@ import {
     Plus
   } from "lucide-react";
 
-function AvailableFieldList() {
+function AvailableFieldList({ moduleName }) {
 
 const {openModal,closeModal}=useModal();
 
@@ -34,7 +34,7 @@ const {openModal,closeModal}=useModal();
                     onClick={()=>openModal({
                         title:"add field",
                         size:"lg",
-                        content:<CustomFieldForm fieldData={f} closeModal={closeModal}/>
+                        content:<CustomFieldForm fieldData={f}  moduleName={moduleName} closeModal={closeModal}/>
                     })}
                   >
                     <Plus className="w-4 h-4" />

@@ -3,29 +3,37 @@ import { useDispatch } from "react-redux";
 import {
   addCustomField,
   updateCustomField,
-  fetchCustomField
+  fetchLeadCustomField,
+  fetchContactCustomField
 } from "./customFieldSlice";
 
 import { useModal } from "../../context/ModalContext";
 
-const CustomFieldForm = ({ fieldData = {} }) => {
+const CustomFieldForm = ({ fieldData = {},moduleName }) => {
   const dispatch = useDispatch();
 const {closeModal}=useModal()
   const isEditMode = Boolean(fieldData?.id);
   // 🧠 initial state
- const [field, setField] = useState({
-  options_mode: "manual",
-  is_multiple: 0,
-  is_email: 0,
-  is_required: 0,
-  is_active: 0,
-  consent:0,
+  const [field, setField] = useState(() => ({
+    display_text: "",
+    field_name: "",
+    field_type: "",
+    field_group: "basic",
+    placeholder: "",
+    priority: 0,
+    field_options: "",
+    options_mode: "manual",
+    is_multiple: 0,
+    is_email: 0,
+    is_required: 0,
+    is_active: 1,
+    consent: 0,
+    field_for: moduleName,
+    ...fieldData
+  }));
 
-  ...fieldData
-});
-
-console.log(fieldData)
-
+// console.log(fieldData)
+// console.log(field)
   const baseClasses =
     "p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none";
 
@@ -39,52 +47,47 @@ console.log(fieldData)
     }
   }, [fieldData]);
   // 🔹 Build API payload
-const buildPayload = () => {
-  // console.log(field,"after")
-
-  let payload = { ...field };
-
-  // 🔐 force numeric values
-  payload.is_required = payload.is_required ? 1 : 0;
-  payload.is_email = payload.is_email ? 1 : 0;
-  payload.is_multiple = payload.is_multiple ? 1 : 0;
-  payload.is_active = payload.is_active ? 1 : 0;
-  payload.consent = payload.consent ? 1 : 0;
-
- if (payload.field_type === "List" || payload.field_type === "Options") {
-  if (payload.options_mode === "manual") {
-    const optionsArray = payload.field_options
-      ?.split(",")
-      .map(o => o.trim())
-      .filter(Boolean);
-    //  console.log(optionsArray,"ram")
-    // 🔥 validate non-empty
-    if (!optionsArray || optionsArray.length === 0) {
-      throw new Error("Manual field options cannot be empty");
+  const buildPayload = () => {
+    let payload = { ...field };
+  
+    payload.is_required = payload.is_required ? 1 : 0;
+    payload.is_email = payload.is_email ? 1 : 0;
+    payload.is_multiple = payload.is_multiple ? 1 : 0;
+    payload.is_active = payload.is_active ? 1 : 0;
+    payload.consent = payload.consent ? 1 : 0;
+  
+    if (payload.field_type === "List" || payload.field_type === "Options") {
+      if (payload.options_mode === "manual") {
+        const optionsArray = payload.field_options
+          ?.split(",")
+          .map(o => o.trim())
+          .filter(Boolean);
+  
+        if (!optionsArray.length) {
+          throw new Error("Manual field options cannot be empty");
+        }
+  
+        payload.field_options = optionsArray.join(",");
+      }
     }
-
-    payload.field_options = optionsArray.join(",");
-  }
-}
-
-  payload.consent = payload.consent ?? 0; // 🔥 default 0 if missing
-  delete payload.options_mode;
-  return payload;
-};
-
-
+  
+    delete payload.options_mode;
+  
+    return payload;
+  };
   // 🔥 ADD / UPDATE handler
   const submitHandler = async (e) => {
     e.preventDefault();
 
     const payload = buildPayload();
+    console.log(payload,"ram" ) 
     try {
       if (isEditMode) {
         await dispatch(updateCustomField(payload)).unwrap();
         console.log(payload)
         alert("Field updated successfully");
         closeModal()
-      } else {
+      } else  { 
         await dispatch(addCustomField(payload)).unwrap();
         console.log(payload,"after payload")
         console.log(addCustomField,"after add")
@@ -92,8 +95,11 @@ const buildPayload = () => {
 
         closeModal()
       }
-
-      dispatch(fetchCustomField());
+      if(field.field_for==="Leads"){
+        dispatch(fetchLeadCustomField());
+      }else{
+        dispatch(fetchContactCustomField());
+      }
     } catch (err) {
       alert(err?.message || "Operation failed");
       console.log(err)

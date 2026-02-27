@@ -3,7 +3,6 @@ export const availableFieldData = [
     {
       key: "Text",
       field_name: "",
-      field_for: "Contacts",
       field_type: "String",
       display_text: "",
       field_group: "",
@@ -17,7 +16,6 @@ export const availableFieldData = [
     {
       key: "Large Text",
       field_name: "",
-      field_for: "Contacts",
       field_type: "LargeText",
       display_text: "",
       field_group: "",
@@ -31,7 +29,6 @@ export const availableFieldData = [
     {
       key: "List",
       field_name: "",
-      field_for: "Contacts",
       field_type: "List",
       display_text: "",
       field_group: "",
@@ -45,7 +42,6 @@ export const availableFieldData = [
     {
       key: "Date",
       field_name: "",
-      field_for: "Contacts",
       field_type: "Date",
       display_text: "",
       field_group: "",
@@ -59,7 +55,6 @@ export const availableFieldData = [
     {
       key: "Date Time",
       field_name: "",
-      field_for: "Contacts",
       field_type: "DateTime",
       display_text: " ",
       field_group: "",
@@ -73,7 +68,6 @@ export const availableFieldData = [
     {
       key: "Integer",
       field_name: "",
-      field_for: "Contacts",
       field_type: "Integer",
       display_text: "",
       field_group: "",
@@ -87,7 +81,6 @@ export const availableFieldData = [
     {
       key: "Decimal",
       field_name: "",
-      field_for: "Contacts",
       field_type: "Decimal",
       display_text: " ",
       field_group: "",
@@ -101,7 +94,6 @@ export const availableFieldData = [
     {
       key: "File",
       field_name: "",
-      field_for: "Contacts",
       field_type: "File",
       display_text: " ",
       field_group: "",
@@ -115,7 +107,6 @@ export const availableFieldData = [
     {
       key: "Options",
       field_name: "",
-      field_for: "Contacts",
       field_type: "Options",
       display_text: " ",
       field_group: "",

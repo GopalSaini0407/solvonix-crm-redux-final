@@ -140,7 +140,7 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Contacts Settings</h2>
                 <div className="space-y-6">
-                 <CustomFields/>
+                 <CustomFields FieldType="Contacts"/>
                 </div>
               </div>
             )}
@@ -164,6 +164,9 @@ export default function SettingsPage() {
             {activeTab === "leads" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Leads Settings</h2>
+                <div className="space-y-6">
+                 <CustomFields FieldType="leads"/>
+                </div>
               </div>
             )}
 

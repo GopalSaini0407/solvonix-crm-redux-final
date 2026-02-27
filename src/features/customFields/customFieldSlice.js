@@ -1,14 +1,27 @@
+import { Contact } from "lucide-react";
 import customFieldService from "./customFieldService";
 import { createAsyncThunk,createSlice } from "@reduxjs/toolkit";
 
 
-export const fetchCustomField=createAsyncThunk("customField/fetchCustomField",async(_,thunkAPI)=>{
+export const fetchContactCustomField=createAsyncThunk("contactCustomField/fetchContactCustomField",async(_,thunkAPI)=>{
    
     try {
-        return await customFieldService.fetchCustomField();
+        return await customFieldService.fetchContactCustomField();
     } catch (err) {
         return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
+})
+
+export const fetchLeadCustomField=createAsyncThunk("leadCustomField/fetchLeadCustomField",async(_,thunkAPI)=>{
+
+try{
+  return await customFieldService.fetchLeadCustomField();
+
+}catch(err){
+  return thunkAPI.rejectWithValue(err.response?.data || err.message);
+}
+
+
 })
 
 export const addCustomField=createAsyncThunk("customField/addCustomField",async(addedField,thunkAPI)=>{
@@ -29,30 +42,39 @@ export const updateCustomField=createAsyncThunk("customField/updateCustomField",
     }
 })
 
-export const updateCustomFieldPriority=createAsyncThunk("customField/updateCustomFieldPriority",async({fieldId,updatedField},thunkAPI)=>{
-
+export const updateCustomFieldPriority = createAsyncThunk(
+  "customField/updateCustomFieldPriority",
+  async ({ fieldId, updatedField }, thunkAPI) => {
     try {
-          return await customFieldService.updateCustomFieldPriority(fieldId,updatedField)
-    } catch (err) {
-        return thunkAPI.rejectWithValue(err.response?.data || err.message);
-    }
+      await customFieldService.updateCustomFieldPriority(fieldId, updatedField);
 
-})
+      // important: return original data
+      return { fieldId, updatedField };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 
 const  initialState={
-    customFields: {},
+    customFields: {
+      Leads:{},
+      Contacts:{}
+    },
     loading:{
-        fetch:false,
-        create:false,
-        update:false,
-        priority:false
+      fetchLead: false,
+      fetchContact: false,
+      create:false,
+      update:false,
+      priority:false
     },
     error:{
-        fetch:null,
-        create:null,
-        update:null,
-        priority:null
-    },
+      fetchLead: null,
+      fetchContact: null,
+      create:null,
+      update:null,
+      priority:null
+    }
        
 }
 
@@ -61,34 +83,52 @@ const customFieldSlice=createSlice({
     initialState,
     reducers: {
         reorderCustomFields(state, action) {
-          const { groupName, updatedFields } = action.payload;
-          state.customFields[groupName] = updatedFields;
+          const {moduleName, groupName, updatedFields } = action.payload;
+           
+          if(!state.customFields[moduleName]) return;
+
+          state.customFields[moduleName][groupName] = updatedFields;
         },
       
         moveCustomField(state, action) {
-          const { sourceGroup, destGroup } = action.payload;
+          const {moduleName,sourceGroup, destGroup } = action.payload;
       
-          state.customFields[sourceGroup.name] = sourceGroup.fields;
-          state.customFields[destGroup.name] = destGroup.fields;
+          state.customFields[moduleName][sourceGroup.name] = sourceGroup.fields;
+          state.customFields[moduleName][destGroup.name] = destGroup.fields;
         }
       },
       
     extraReducers:(builder)=>
         builder
         
-    //    fetch customfield
-    .addCase(fetchCustomField.pending,(state)=>{
-        state.loading.fetch=true;
-        state.error.fetch=null;
+    //    fetch contact customfield
+    .addCase(fetchContactCustomField.pending,(state)=>{
+        state.loading.fetchContact=true;
+        state.error.fetchContact=null;
     })
-    .addCase(fetchCustomField.fulfilled,(state,action)=>{
-        state.loading.fetch=false;
-        state.customFields=action.payload?.data;
-        state.error.fetch=null
+    .addCase(fetchContactCustomField.fulfilled,(state,action)=>{
+        state.loading.fetchContact=false;
+        state.customFields.Contacts=action.payload?.data;
+        state.error.fetchContact=null
     })
-    .addCase(fetchCustomField.rejected,(state,action)=>{
-        state.loading.fetch=false;
-        state.error.fetch=action.payload;
+    .addCase(fetchContactCustomField.rejected,(state,action)=>{
+        state.loading.fetchContact=false;
+        state.error.fetchContact=action.payload;
+    })
+
+    // fetch leads custom field
+    .addCase(fetchLeadCustomField.pending,(state)=>{
+      state.loading.fetchLead=true;
+      state.error.fetchLead=null;
+    })
+    .addCase(fetchLeadCustomField.fulfilled,(state,action)=>{
+      state.loading.fetchLead=false;
+      state.customFields.Leads=action.payload?.data;
+      state.error.fetchLead=null;
+    })
+    .addCase(fetchLeadCustomField.rejected,(state,action)=>{
+     state.loading.fetchLead=false;
+     state.error.fetchLead=action.payload;
     })
 
     // add custom field
@@ -101,14 +141,16 @@ const customFieldSlice=createSlice({
   state.loading.create = false;
 
   const newField = action.payload?.data;
+  const moduleName=newField.field_for;
   const group = newField.field_group;
 
   // agar group exist nahi karta
-  if (!state.customFields[group]) {
-    state.customFields[group] = [];
+  if (!state.customFields[moduleName]) return;
+  if (!state.customFields[moduleName][group]) {
+    state.customFields[moduleName][group] = [];
   }
 
-  state.customFields[group].push(newField);
+  state.customFields[moduleName][group].push(newField);
   state.error.create = null;
 })
 
@@ -124,41 +166,41 @@ const customFieldSlice=createSlice({
     state.loading.update=true;
     state.error.update=null;
     })
-   .addCase(updateCustomField.fulfilled, (state, action) => {
-  state.loading.update = false;
-
-  const updatedField = action.payload?.data || action.payload;
-  const newGroup = updatedField.field_group;
-
-  let oldGroup = null;
-  let oldIndex = -1;
-
-  // old group dhundho
-  for (const group in state.customFields) {
-    const idx = state.customFields[group].findIndex(
-      field => field.id === updatedField.id
-    );
-    if (idx !== -1) {
-      oldGroup = group;
-      oldIndex = idx;
-      break;
-    }
-  }
-
-  // remove from old group
-  if (oldGroup !== null) {
-    state.customFields[oldGroup].splice(oldIndex, 1);
-  }
-
-  // add to new group
-  if (!state.customFields[newGroup]) {
-    state.customFields[newGroup] = [];
-  }
-
-  state.customFields[newGroup].push(updatedField);
-
-  state.error.update = null;
-})
+    .addCase(updateCustomField.fulfilled, (state, action) => {
+      state.loading.update = false;
+    
+      const updatedField = action.meta.arg;   // 🔥 FIXED
+      const moduleName = updatedField.field_for;
+      const newGroup = updatedField.field_group;
+    
+      if (!state.customFields[moduleName]) return;
+    
+      let oldGroup = null;
+      let oldIndex = -1;
+    
+      for (const group in state.customFields[moduleName]) {
+        const idx = state.customFields[moduleName][group].findIndex(
+          field => field.id === updatedField.id
+        );
+        if (idx !== -1) {
+          oldGroup = group;
+          oldIndex = idx;
+          break;
+        }
+      }
+    
+      if (oldGroup !== null) {
+        state.customFields[moduleName][oldGroup].splice(oldIndex, 1);
+      }
+    
+      if (!state.customFields[moduleName][newGroup]) {
+        state.customFields[moduleName][newGroup] = [];
+      }
+    
+      state.customFields[moduleName][newGroup].push(updatedField);
+    
+      state.error.update = null;
+    })
 
     .addCase(updateCustomField.rejected,(state,action)=>{
         state.loading.update=false;
@@ -172,14 +214,29 @@ const customFieldSlice=createSlice({
       state.loading.priority=true;
       state.error.priority=null;
     })
-    .addCase(updateCustomFieldPriority.fulfilled,(state)=>{
-        state.loading.priority=false;
-        state.error.priority=null;
+    .addCase(updateCustomFieldPriority.fulfilled, (state, action) => {
+      state.loading.priority = false;
+    
+      const { fieldId, updatedField } = action.payload;
+    
+      const moduleName = updatedField.field_for;
+      const groupName = updatedField.field_group;
+    
+      const group = state.customFields[moduleName]?.[groupName];
+      if (!group) return;
+    
+      const index = group.findIndex(f => f.id === fieldId);
+    
+      if (index !== -1) {
+        group[index].priority = updatedField.priority;
+      }
+    
+      group.sort((a, b) => a.priority - b.priority);
     })
-    .addCase(updateCustomFieldPriority.rejected,(state,action)=>{
-        state.loading.priority=false;
-        state.error.priority=action.payload;
-    })
+    // .addCase(updateCustomFieldPriority.rejected,(state,action)=>{
+    //     state.loading.priority=false;
+    //     state.error.priority=action.payload;
+    // })
 
 })
 

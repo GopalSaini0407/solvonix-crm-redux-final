@@ -1,8 +1,13 @@
 import api from "../../app/api";
 
-const fetchCustomField=async()=>{
+const fetchContactCustomField=async()=>{
       const res=await api.get('user/get/contacts/fields')
       return res.data;
+}
+
+const fetchLeadCustomField=async()=>{
+    const res=await api.get('user/get/leads/fields')
+    return res.data;
 }
 
 const addCustomField=async(addedField)=>{
@@ -21,7 +26,8 @@ const updateCustomFieldPriority=async(fieldId,updatedField)=>{
 }
 
 export default {
-    fetchCustomField,
+    fetchContactCustomField,
+    fetchLeadCustomField,
     addCustomField,
     updateCustomField,
     updateCustomFieldPriority

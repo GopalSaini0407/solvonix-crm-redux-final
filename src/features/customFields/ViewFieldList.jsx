@@ -1,7 +1,8 @@
 import { FaEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchCustomField,
+  fetchLeadCustomField,
+  fetchContactCustomField,
   reorderCustomFields,
   moveCustomField,
   updateCustomFieldPriority,
@@ -15,17 +16,23 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-const ViewFieldList = () => {
+const ViewFieldList = ({moduleName}) => {
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
   const { customFields, error, loading } = useSelector(
     (state) => state.customFields
   );
+  const moduleFields = customFields[moduleName] || {};
 
   // console.log(customFields);
   useEffect(() => {
-    dispatch(fetchCustomField());
-  }, [dispatch]);
+    if (moduleName === "Leads") {
+      dispatch(fetchLeadCustomField());
+    } else if (moduleName === "Contacts") {
+      dispatch(fetchContactCustomField());
+    }
+  }, [dispatch, moduleName]);
+
 
   const handleDragEnd = ({ source, destination }) => {
     if (!destination) return;
@@ -34,7 +41,8 @@ const ViewFieldList = () => {
     if (source.droppableId === destination.droppableId) {
       const groupName = source.droppableId;
 
-      const items = Array.from(customFields[groupName]);
+      const items = Array.from(moduleFields[groupName] || []);
+
       const [moved] = items.splice(source.index, 1);
       items.splice(destination.index, 0, moved);
 
@@ -43,7 +51,13 @@ const ViewFieldList = () => {
         priority: i + 1,
       }));
 
-      dispatch(reorderCustomFields({ groupName, updatedFields: updated }));
+      dispatch(
+        reorderCustomFields({
+          moduleName,
+          groupName,
+          updatedFields: updated
+        })
+      );
 
       updated.forEach((field) => {
         dispatch(
@@ -52,6 +66,7 @@ const ViewFieldList = () => {
             updatedField: {
               priority: field.priority,
               field_group: groupName,
+              field_for: moduleName,   // 🔥 ADD THIS
             },
           })
         );
@@ -63,8 +78,8 @@ const ViewFieldList = () => {
       const sourceGroup = source.droppableId;
       const destGroup = destination.droppableId;
 
-      const sourceItems = Array.from(customFields[sourceGroup]);
-      const destItems = Array.from(customFields[destGroup]);
+      const sourceItems = Array.from(moduleFields[sourceGroup] || []);
+const destItems = Array.from(moduleFields[destGroup] || []);
 
       const removed = sourceItems.splice(source.index, 1)[0];
       const moved = { ...removed, field_group: destGroup };
@@ -83,6 +98,7 @@ const ViewFieldList = () => {
 
       dispatch(
         moveCustomField({
+          moduleName,
           sourceGroup: { name: sourceGroup, fields: updatedSource },
           destGroup: { name: destGroup, fields: updatedDest },
         })
@@ -95,6 +111,7 @@ const ViewFieldList = () => {
             updatedField: {
               priority: field.priority,
               field_group: field.field_group,
+              field_for: moduleName,   // 🔥 ADD THIS
             },
           })
         );
@@ -102,11 +119,11 @@ const ViewFieldList = () => {
     }
   };
 
-  if (loading.fetch) {
+  if (loading.fetchLead || loading.fetchContact) {
     return <Loader text="Field loading..." size="lg" />;
   }
-
-  if (error.fetch) {
+  
+  if (error.fetchLead || error.fetchContact) {
     console.log(error);
   }
 
@@ -122,7 +139,7 @@ const ViewFieldList = () => {
 
       <PriorityDragDrop
         grouped
-        data={customFields}
+        data={moduleFields}
         onDragEnd={handleDragEnd}
         containerClass="grid gap-6"
         getItemId={(field, index) =>
@@ -157,6 +174,7 @@ const ViewFieldList = () => {
                   content: (
                     <CustomFieldForm
                       fieldData={field}
+                      moduleName={moduleName} 
                       closeModal={closeModal}
                     />
                   ),
