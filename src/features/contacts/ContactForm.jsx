@@ -61,7 +61,6 @@ const ContactForm = ({  editContact = null,closeModal }) => {
 
   const handleSubmit = async () => {
     const payload = buildPayload(fieldValues);
-
     try {
       if (editContact) {
         await dispatch(

@@ -202,7 +202,6 @@ export const exportContactCsv = createAsyncThunk(
              state.error.log = action.payload?.data;
            })
         // fetchContactFields
-
         .addCase(fetchContactFields.pending,(state)=>{
          state.loading.fetchFeids=true;
          state.error.fetchFeids=null;

@@ -7,7 +7,7 @@ const getLeads=async(params={})=>{
 }
 
 const createLead=async(data)=>{
-    const res=await api.post(`/user/create/lead`,data);
+    const res=await api.post(`user/save/lead`,data);
     return res.data;
 }
 
@@ -21,5 +21,13 @@ const deleteLead=async(leadId)=>{
     return res.data;
 }
 
+// get contact fields
 
-export default {getLeads,createLead,updateLead,deleteLead};
+const getLeadFields=async()=>{
+    const res=await api.get(`/user/get/leads/fields`);
+    return res.data;
+}
+
+
+
+export default {getLeads,createLead,updateLead,deleteLead,getLeadFields};

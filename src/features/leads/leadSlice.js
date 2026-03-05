@@ -35,6 +35,17 @@ export const deleteLead=createAsyncThunk("leads/deleteLead",async(leadId,thunkAP
     }
 })
 
+export const getLeadFields=createAsyncThunk("leads/getLeadFields",async(_,thunkAPI)=>{
+   
+    try {
+        return await leadService.getLeadFields();
+    } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+        
+    }
+
+   })
+
 
 const leadSlice=createSlice({
     name:"leads",
@@ -46,21 +57,40 @@ const leadSlice=createSlice({
         total:0,
         per_page:10,
         },
-
+        fields:{},
+        fieldValues:{},
+        activities:[],
         loading:{
-            fetch:false,
-            create:false,
-            update:false,
-            delete:false
+            fetch: false,
+            create: false,
+            fetchFeids:false,
+            update: false,
+            delete:false,
+            log:false,
+            export:false,
         },
         error:{
-            fetch:null,
-            create:null,
-            update:null,
+            fetch: null,
+            create: null,
+            fetchFeids:null,
+            update: null,
             delete:null,
+            log:null,
+            export:null
         }
     },
-    reducers:{},
+    reducers:{
+        setFieldValue:(state,action)=>{
+          const {fieldName,value}=action.payload;
+          state.fieldValues[fieldName]=value
+        },
+        resetFieldValues: (state) => {
+      state.fieldValues = {};
+    },
+    clearContactActivity(state) {
+        state.activities = [];
+      },
+    },
     extraReducers:(builder)=>
         builder
 
@@ -115,8 +145,22 @@ const leadSlice=createSlice({
         state.loading.update=false;
         state.error.update=action.payload;
     })
-    // delete leads
 
+      // fetchContactFields
+      .addCase(getLeadFields.pending,(state)=>{
+        state.loading.fetchFeids=true;
+        state.error.fetchFeids=null;
+       })
+       .addCase(getLeadFields.fulfilled,(state,action)=>{
+           state.loading.fetchFeids=false;
+           state.fields=action.payload.data;
+       })
+       .addCase(getLeadFields.rejected,(state,action)=>{
+           state.loading.fetchFeids=false;
+           state.error.fetchFeids=action.payload;
+       })
+
+    // delete leads
     .addCase(deleteLead.pending,(state)=>{
         state.loading.delete=true;
         state.error.delete=null;
@@ -131,5 +175,5 @@ const leadSlice=createSlice({
     })
 })
 
-
+export const { setFieldValue,resetFieldValues } = leadSlice.actions;
 export default leadSlice.reducer;

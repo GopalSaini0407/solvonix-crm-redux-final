@@ -80,19 +80,17 @@ const {closeModal}=useModal()
     e.preventDefault();
 
     const payload = buildPayload();
-    console.log(payload,"ram" ) 
+    console.log(payload,"normal") 
     try {
       if (isEditMode) {
         await dispatch(updateCustomField(payload)).unwrap();
-        console.log(payload)
+        console.log(payload,"edit")
         alert("Field updated successfully");
         closeModal()
       } else  { 
         await dispatch(addCustomField(payload)).unwrap();
-        console.log(payload,"after payload")
-        console.log(addCustomField,"after add")
+        console.log(addCustomField,"add")
         alert("Field added successfully");
-
         closeModal()
       }
       if(field.field_for==="Leads"){
@@ -261,6 +259,8 @@ const {closeModal}=useModal()
               <option value="countries">Countries</option>
               <option value="states">States</option>
               <option value="cities">Cities</option>
+              <option value="contacts">contacts</option>
+
             </select>
           )}
 
