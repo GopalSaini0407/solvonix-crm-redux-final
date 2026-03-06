@@ -4,7 +4,6 @@ import { getLeadChannel } from './leadChannelSlice';
 function ChannelList() {
      const dispatch=useDispatch()
     const {leadChannel}=useSelector((state)=>state.leadChannel);
-    console.log(leadChannel)
     
    useEffect(()=>{
      dispatch(getLeadChannel())

@@ -30,7 +30,6 @@ const {openModal,closeModal}=useModal();
 const { leads, pagination, loading, error } = useSelector(
 (state) => state.leads
 );
-console.log(leads);
 useEffect(() => {
 dispatch(getLeads({ page: pagination.current_page }));
 }, [dispatch]);
@@ -73,7 +72,7 @@ const handleExportContacts = async () => {
 // ---------------- UI ----------------
 if (loading.fetch){
 return ( 
-<Loader text="Contacts loading..." size="lg"/>
+<Loader text="Leads loading..." size="lg"/>
 )
 } 
 // 🔹 Error
@@ -107,8 +106,7 @@ return (
          onClick={()=>openModal({
          title:"Add lead",
          size:"xl",
-         content:
-         <LeadForm closeModal={closeModal}/>
+         content:<LeadForm closeModal={closeModal}/>
          ,
          })}
          >
@@ -251,7 +249,11 @@ return (
                                     <span>View Details</span>
                                  </button>
                                  <button
-                                    onClick={""}
+                                    onClick={()=>openModal({
+                                       title:"Update Lead",
+                                       size:"lg",
+                                       content:<LeadForm editLead={lead} closeModal={closeModal}/>
+                                    })}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                                     >
                                     <Edit className="w-4 h-4" />
@@ -309,7 +311,11 @@ return (
                               <span>View Details</span>
                            </button>
                            <button
-                              onClick={""}
+                              onClick={()=>openModal({
+                                 title:"Update Lead",
+                                 size:"lg",
+                                 content:<LeadForm editLead={lead} closeModal={closeModal}/>
+                              })}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                               >
                               <Edit className="w-4 h-4" />

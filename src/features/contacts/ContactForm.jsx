@@ -19,7 +19,7 @@ const ContactForm = ({  editContact = null,closeModal }) => {
 
   // Fetch fields
   useEffect(() => {
-    if (!Object.keys(fields).length) {
+    if (!fields || Object.keys(fields).length === 0) {
       dispatch(fetchContactFields());
     }
   }, [dispatch, fields]);
@@ -73,14 +73,14 @@ const ContactForm = ({  editContact = null,closeModal }) => {
         await dispatch(addContact(payload)).unwrap();
       }
 
-      dispatch(fetchContacts({ page: pagination.current_page }));
+      dispatch(fetchContacts({ page: pagination?.current_page || 1 }));
       closeModal();
     } catch (err) {
       console.log("Save failed", err);
     }
   };
 
-  if (loading.fetchFeids) return <p>Loading...</p>;
+  if (loading?.fetchFields) return <p>Loading...</p>;
  
   // Parse options for dynamic form fields
   const parseOptions = (optionsString) => {
@@ -102,7 +102,7 @@ const ContactForm = ({  editContact = null,closeModal }) => {
         {editContact ? "Update Contact" : "Add Contact"}
       </h2> */}
 
-      {(error.create || error.update) && (
+      {(error?.create || error?.update) && (
         <div className="mb-4 bg-red-50 p-2 text-red-700 rounded">
           {error.create || error.update}
         </div>
@@ -110,7 +110,9 @@ const ContactForm = ({  editContact = null,closeModal }) => {
 
       {Object.entries(fields || {}).map(([group, groupFields]) => {
 
-         const sortedFields=[...groupFields].sort((a,b)=>(a.priority ?? 999)-(b.priority ?? 99));
+const sortedFields = [...groupFields].sort(
+  (a, b) => (a.priority ?? 999) - (b.priority ?? 999)
+);
 
          return (
 <div key={group} className="mb-6 border border-gray-200 rounded">
@@ -156,7 +158,7 @@ const ContactForm = ({  editContact = null,closeModal }) => {
       <div className="text-right">
         <button
           onClick={handleSubmit}
-          disabled={loading.create || loading.update}
+          disabled={loading?.create || loading?.update}
           className="bg-blue-600 text-white px-6 py-2 rounded"
         >
           {editContact

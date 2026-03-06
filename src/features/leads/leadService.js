@@ -12,10 +12,9 @@ const createLead=async(data)=>{
 }
 
 const updateLead=async(leadId,data)=>{
-    const res=await api.post(`/user/update/lead${leadId}`,data);
+    const res=await api.post(`/user/update/lead/${leadId}`,data);
     return res.data;
 }
-
 const deleteLead=async(leadId)=>{
     const res=await api.post(`/user/delete/lead${leadId}`);
     return res.data;
