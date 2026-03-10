@@ -16,7 +16,7 @@ const updateLead=async(leadId,data)=>{
     return res.data;
 }
 const deleteLead=async(leadId)=>{
-    const res=await api.post(`/user/delete/lead${leadId}`);
+    const res=await api.get(`/user/lead/delete/${leadId}`);
     return res.data;
 }
 

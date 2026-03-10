@@ -98,7 +98,9 @@ const leadStageSlice = createSlice({
       })
       .addCase(addLeadStage.fulfilled, (state, action) => {
         state.loading.create = false;
-        state.leadStages.push(action.payload?.data || action.payload.data);
+        // if (action.payload?.data) {
+        //   state.leadStages.push(action.payload.data);
+        // }
       })
       .addCase(addLeadStage.rejected, (state, action) => {
         state.loading.create = false;

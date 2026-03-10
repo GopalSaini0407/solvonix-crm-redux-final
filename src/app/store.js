@@ -14,4 +14,8 @@ export const store = configureStore({
     leads:LeadsReducer,
     leadChannel:LeadChannelReducer,
   },
-})
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+})  

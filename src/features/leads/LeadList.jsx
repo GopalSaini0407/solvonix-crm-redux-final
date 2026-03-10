@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLeads } from "./leadSlice";
+import { getLeads,deleteLead } from "./leadSlice";
 import {
 Eye,
 Phone,
@@ -24,6 +24,7 @@ import { TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs
 import {TabsWithUrl} from '../../utils/TabsWithUrl';
 import ChannelList from "../leadChannel/ChannelList"
 import LeadForm from "./LeadForm";
+import LeadStageDropdown from "../leadsStage/LeadStageDropdown";
 const LeadList = () => {
 const dispatch = useDispatch();
 const {openModal,closeModal}=useModal();
@@ -46,17 +47,17 @@ console.log("Call", contact.mobile);
 const handleEmail = (contact) => {
 console.log("Email", contact.email);
 };
-const handleDeleteContact = async (contactId) => {
-// if(window.confirm("Are you sure you want to delete this contact?")){
-//   try {
-//     await dispatch(deleteContact(contactId)).unwrap();
-//     // optional: refresh pagination data
-//     dispatch(fetchContacts({ page: pagination.current_page }));
-//   } catch(err) {
-//     console.log("Delete failed", err);
-//   }
-// }
-};
+const handleDeleteLead = async (leadId) => {
+   if(window.confirm("Are you sure you want to delete this lead?")){
+     try {
+       await dispatch(deleteLead(leadId)).unwrap();
+       // optional: refresh pagination data
+       dispatch(getLeads({ page: pagination.current_page }));
+     } catch(err) {
+       console.log("Delete failed", err);
+     }
+   }
+ };
 const handleExportContacts = async () => {
 // await exportCSV({
 //   dispatch,
@@ -145,11 +146,16 @@ return (
       </div>
    </div>
    {/* filter */}
-   <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+   <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm flex gap-3">
+   <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Stage</label>
+      <LeadStageDropdown/>
+      </div>
       <div>
          <label className="block text-sm font-medium text-gray-700 mb-2">Source</label>
          <ChannelList/>
       </div>
+      
    </div>
    <TabsWithUrl defaultValue="table">
       <TabsList className="flex justify-end mb-3">
@@ -260,7 +266,7 @@ return (
                                     <span>Edit</span>
                                  </button>
                                  <button
-                                    onClick={""}
+                                    onClick={() => handleDeleteLead(lead.id)}
                                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
                                     >
                                     <Trash2 className="w-4 h-4" />
@@ -322,7 +328,7 @@ return (
                               <span>Edit</span>
                            </button>
                            <button
-                              onClick={""}
+                              onClick={() => handleDeleteLead(lead.id)}
                               className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
                               >
                               <Trash2 className="w-4 h-4" />

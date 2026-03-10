@@ -198,7 +198,7 @@ if (error.fetch) {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                         {
-                        (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed Contact")
+                        ((`${contact.name ?? ""}`.trim() ||`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim()) || "Unnamed Contact")
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("").toUpperCase() || "?"}

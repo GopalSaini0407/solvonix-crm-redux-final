@@ -1,13 +1,14 @@
 import React from 'react'
 
 function LeadStagePrev({stages}) {
+  console.log(stages,"ram")
   return (
 <>
 <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <h4 className="text-sm font-medium text-blue-800 mb-3">Pipeline Preview</h4>
           <div className="flex flex-wrap gap-2">
             {stages
-              .filter(stage => stage.is_active === 1)
+              ?.filter(stage => stage.is_active === 1)
               .map((stage, index, activeStages) => (
                 <div key={stage.id} className="flex items-center gap-2">
                   <div 
