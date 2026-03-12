@@ -261,6 +261,8 @@ const {closeModal}=useModal()
               <option value="cities">Cities</option>
               <option value="contacts">contacts</option>
               <option value="source">source</option>
+              <option value="stage">stage</option>
+
             </select>
           )}
 

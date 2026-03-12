@@ -31,6 +31,7 @@ const {openModal,closeModal}=useModal();
 const { leads, pagination, loading, error } = useSelector(
 (state) => state.leads
 );
+console.log(leads);
 useEffect(() => {
 dispatch(getLeads({ page: pagination.current_page }));
 }, [dispatch]);
@@ -223,7 +224,7 @@ return (
                            {lead.mobile || "No mobile"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                           {lead.lead_value || "No value"}
+                        {lead.currency}{lead.value || "No value"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
                            {lead.lead_stage || "no lead stage"}
@@ -257,7 +258,7 @@ return (
                                  <button
                                     onClick={()=>openModal({
                                        title:"Update Lead",
-                                       size:"lg",
+                                       size:"xl",
                                        content:<LeadForm editLead={lead} closeModal={closeModal}/>
                                     })}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
@@ -347,7 +348,7 @@ return (
                         <span className="text-sm text-gray-600">{lead.mobile}</span>
                      </div>
                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <span className="text-sm text-gray-600 my-2 flex">${lead.lead_value}</span>
+                        <span className="text-sm text-gray-600 my-2 flex">{lead.currency}{lead.value}</span>
                         <span className="text-sm text-green-700">{lead.lead_source}</span>
                      </div>
                      <div className="flex items-center space-x-2">

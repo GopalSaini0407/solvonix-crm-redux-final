@@ -10,6 +10,8 @@ import {
 } from "./leadSlice";
 import RenderField from "./RenderField";
 import { fetchContacts } from "../contacts/contactSlice";
+import { fetchLeadStage } from "../leadsStage/leadStageSlice";
+import { getLeadChannel } from "../leadChannel/leadChannelSlice";
 
 const LeadForm = ({ editLead = null, closeModal }) => {
   const dispatch = useDispatch();
@@ -19,8 +21,12 @@ const LeadForm = ({ editLead = null, closeModal }) => {
   );
 
   const { contacts } = useSelector((state) => state.contacts);
+  const { leadStages } = useSelector((state) => state.leadStages);
+  const { leadChannel } = useSelector((state) => state.leadChannel);
 
   useEffect(() => {
+    dispatch(fetchLeadStage());
+    dispatch(getLeadChannel());
     dispatch(fetchContacts({ page: 1 }));
   }, [dispatch]);
 
@@ -71,14 +77,15 @@ const LeadForm = ({ editLead = null, closeModal }) => {
 
   const handleSubmit = async () => {
     const rawPayload = buildPayload(fieldValues);
-
+      
     const payload = {
       ...rawPayload,
-      contact_id: rawPayload.contacts ?? rawPayload.contact_id,
+      contact_id: Number(rawPayload.contacts ?? rawPayload.contact_id),
+      lead_stage:rawPayload?.lead_stage ?? rawPayload.lead_stage_id,
+      lead_stage_id:rawPayload?.lead_stage ?? rawPayload.lead_stage_id
+
     };
-
     delete payload.contacts;
-
     try {
       if (editLead?.id) {
         await dispatch(
@@ -88,6 +95,7 @@ const LeadForm = ({ editLead = null, closeModal }) => {
           })
         ).unwrap();
       } else {
+        console.log(payload,"add")
         await dispatch(createLead(payload)).unwrap();
       }
 
@@ -148,6 +156,21 @@ const LeadForm = ({ editLead = null, closeModal }) => {
       }));
     }
 
+    console.log(leadStages)
+    if (optionsString === "stage") {
+      return leadStages.map((s) => ({
+        label: s.stage_name,
+        value: s.id,
+      }));
+    }
+
+    if (optionsString === "source") {
+      return leadChannel.map((c) => ({
+        label: c.channel,
+        value: c.channel,
+      }));
+    }
+
     return optionsString.split(",").map((v) => ({
       label: v.trim(),
       value: v.trim(),
@@ -158,7 +181,10 @@ const LeadForm = ({ editLead = null, closeModal }) => {
     <div className="max-w-4xl mx-auto p-6">
       {(error?.create || error?.update) && (
         <div className="mb-4 bg-red-50 p-2 text-red-700 rounded">
-          {error.create || error.update}
+          {error?.create?.message ||
+            error?.update?.message ||
+            error?.create ||
+            error?.update}
         </div>
       )}
 

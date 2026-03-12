@@ -196,16 +196,25 @@ if (error.fetch) {
                 <tr key={contact.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {
-                        ((`${contact.name ?? ""}`.trim() ||`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim()) || "Unnamed Contact")
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("").toUpperCase() || "?"}
-                      </div>
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+  {
+    (
+      `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() ||
+      contact?.name ||
+      "Unnamed Contact"
+    )
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase() || "?"
+  }
+</div>
                       <div className="font-medium text-gray-900">
-                        {contact.first_name+ " "+ (contact.last_name || "") || "Unnamed Contact"}
-                      </div>
+                      {(
+  `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() ||
+  contact?.name ||
+  "Unnamed Contact"
+)}                      </div>
                     </div>
                   </td>
 
@@ -297,15 +306,19 @@ if (error.fetch) {
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                         {
                         // (contact.first_name+" "+contact.last_name)
-                        (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed Contact")
+                        (`${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || contact?.name || "Unnamed Contact")
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("").toUpperCase() || "?"}
                       </div>
                      
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">                    
-                     {contact.first_name+ " "+ (contact.last_name || "") || "Unnamed Contact"}
+                    <h3 className="text-lg font-semibold text-gray-900">   
+                    {(
+  `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() ||
+  contact?.name ||
+  "Unnamed Contact"
+)}                   
                     </h3>
                   </div>
                 </div>
