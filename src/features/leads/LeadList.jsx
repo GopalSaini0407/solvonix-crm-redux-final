@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLeads,deleteLead } from "./leadSlice";
+import { getLeads,deleteLead,exportLeadCsv } from "./leadSlice";
 import {
 Eye,
 Phone,
@@ -19,19 +19,21 @@ import {useModal} from "../../context/ModalContext";
 import CustomButton from "../../components/ui/CustomButton";
 import Loader from "../../components/ui/Loader";
 // import ErrorState from "../../components/ui/ErrorState";
-// import { exportCSV } from "../../utils/exportCSV";
+import { exportCSV } from "../../utils/exportCSV";
 import { TabsList, TabsTrigger, TabsContent } from "../../components/shared/tabs";
 import {TabsWithUrl} from '../../utils/TabsWithUrl';
 import ChannelList from "../leadChannel/ChannelList"
 import LeadForm from "./LeadForm";
 import LeadStageDropdown from "../leadsStage/LeadStageDropdown";
+import ViewLeadDetails from "./ViewLeadDetails";
 const LeadList = () => {
 const dispatch = useDispatch();
 const {openModal,closeModal}=useModal();
 const { leads, pagination, loading, error } = useSelector(
 (state) => state.leads
 );
-console.log(leads);
+
+console.log(leads,"leads list");
 useEffect(() => {
 dispatch(getLeads({ page: pagination.current_page }));
 }, [dispatch]);
@@ -59,17 +61,17 @@ const handleDeleteLead = async (leadId) => {
      }
    }
  };
-const handleExportContacts = async () => {
-// await exportCSV({
-//   dispatch,
-//   action: exportContactCsv,
-//   params: {
-//     filters: {},       // later search / status yahin aayega
-//     contactIds: [],    // selected contacts ke ids
-//   },
-//   fileName: "contacts.csv",
-//   mimeType: "text/csv",
-// });
+const handleExportLeads = async () => {
+await exportCSV({
+dispatch,
+action: exportLeadCsv,
+params: {
+filters: {},       // later search / status yahin aayega
+leadIds: [],    // selected leads ke ids
+},
+fileName: "leads.csv",
+mimeType: "text/csv",
+});
 };
 // ---------------- UI ----------------
 if (loading.fetch){
@@ -92,7 +94,7 @@ return (
       <div>
          {/* Export Button */}
          <CustomButton
-         // onClick={handleExportContacts}
+         onClick={handleExportLeads}
          variant="border"
          leftIcon={
          <Download className="w-4 h-4"/>
@@ -221,16 +223,16 @@ return (
                            {lead.email || "No email"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                           {lead.mobile || "No mobile"}
+                           {lead.phone || "No phone"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                        {lead.currency}{lead.value || "No value"}
+                        {lead.currency}{lead.lead_value || "No value"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                           {lead.lead_stage || "no lead stage"}
+                           {lead.lead_stage?.stage_name || "no lead stage"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                           {lead.lead_source || "no lead source"}
+                           {lead.lead_source?.channel || lead.lead_source_name || "no lead source"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
                            {lead.created_at ? (
@@ -249,7 +251,11 @@ return (
                               </button>
                               <div className="absolute right-0 top-6 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                                  <button
-                                    onClick={""}
+                                    onClick={() => openModal({
+                                      title: "View Lead Details",
+                                      size: "xl",
+                                      content: <ViewLeadDetails lead={lead} />,
+                                    })}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                                     >
                                     <Eye className="w-4 h-4" />
@@ -311,7 +317,11 @@ return (
                         </button>
                         <div className="absolute right-0 top-6 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                            <button
-                              onClick={""}
+                              onClick={() => openModal({
+                                title: "View Lead Details",
+                                size: "xl",
+                                content: <ViewLeadDetails lead={lead} />,
+                              })}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                               >
                               <Eye className="w-4 h-4" />
@@ -345,11 +355,11 @@ return (
                      </div>
                      <div className="flex items-center space-x-2">
                         <Phone className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">{lead.mobile}</span>
+                        <span className="text-sm text-gray-600">{lead.phone}</span>
                      </div>
                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <span className="text-sm text-gray-600 my-2 flex">{lead.currency}{lead.value}</span>
-                        <span className="text-sm text-green-700">{lead.lead_source}</span>
+                        <span className="text-sm text-gray-600 my-2 flex">{lead.currency}{lead.lead_value}</span>
+                        <span className="text-sm text-green-700">{lead.lead_source?.channel || lead.lead_source_name || "no lead source"}</span>
                      </div>
                      <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-600">{lead.message}</span>

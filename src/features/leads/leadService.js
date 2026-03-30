@@ -20,13 +20,42 @@ const deleteLead=async(leadId)=>{
     return res.data;
 }
 
-// get contact fields
+
+// lead activity log
+
+const leadActivityLog=async(leadId)=>{
+    const res=await api.get(`/user/lead/activity/log/${leadId}`);
+    return res.data;
+}
+
+// get lead fields
 
 const getLeadFields=async()=>{
     const res=await api.get(`/user/get/leads/fields`);
     return res.data;
 }
 
+// export lead csv
+
+const exportLeadCsv = async (filters = {}, leadIds = []) => {
+  const res = await api.get(
+    "/user/lead/export/csv",
+    {
+      params: {
+        filters: {
+          search: filters.search,
+          status: filters.status,
+          date_from: filters.date_from,
+          date_to: filters.date_to,
+        },
+        lead_ids: JSON.stringify(leadIds), // ⭐ IMPORTANT
+      },
+      responseType: "blob",
+    }
+  );
+
+  return res.data;
+};
 
 
-export default {getLeads,createLead,updateLead,deleteLead,getLeadFields};
+export default {getLeads,createLead,updateLead,deleteLead,getLeadFields,leadActivityLog,exportLeadCsv};

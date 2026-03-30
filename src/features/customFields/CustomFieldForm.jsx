@@ -262,7 +262,7 @@ const {closeModal}=useModal()
               <option value="contacts">contacts</option>
               <option value="source">source</option>
               <option value="stage">stage</option>
-
+              <option value="currency">currency</option>
             </select>
           )}
 

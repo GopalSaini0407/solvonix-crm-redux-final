@@ -1,0 +1,116 @@
+import {
+    X,
+    History,
+    Phone,
+    Mail,
+    Calendar,
+    Trash2,
+  } from "lucide-react";
+  import LeadActivityLog from "./LeadActivityLog";
+  
+  const ViewLeadDetails = ({ lead, onClose }) => {
+    if (!lead) return null;
+  
+const fullName = lead.name || `${lead.first_name ?? ""} ${lead.last_name ?? ""}`.trim() || "Unnamed Lead";
+
+  const InfoRow = ({ label, value }) => {
+    if (value === undefined || value === null || value === "") return null;
+      return (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {label}
+          </label>
+          <div className="px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+            {value}
+          </div>
+        </div>
+      );
+    };
+  
+    return (
+     <> 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* LEFT SIDE */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Basic Information */}
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="font-semibold text-gray-900 mb-4">
+                Basic Information
+              </h3>
+  
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InfoRow label="Name" value={fullName} />
+                <InfoRow label="Email" value={lead.email} />
+                <InfoRow label="Phone" value={lead.phone || lead.mobile} />
+                <InfoRow label="Currency" value={lead.currency} />
+                <InfoRow label="Value" value={lead.lead_value} />
+                <InfoRow label="Stage" value={lead.lead_stage?.stage_name || lead.lead_stage_name} />
+                <InfoRow label="Source" value={lead.lead_source?.channel || lead.lead_source_name} />
+                <InfoRow label="Lead ID" value={lead.id} />
+                <InfoRow label="Created" value={lead.created_at ? new Date(lead.created_at).toLocaleString() : ""} />
+                <InfoRow label="Updated" value={lead.updated_at ? new Date(lead.updated_at).toLocaleString() : ""} />
+              </div>
+            </div>
+  
+            {/* Activity Log */}
+         <LeadActivityLog leadId={lead.id} limit={3}/>
+
+          </div>
+  
+          {/* RIGHT SIDE */}
+          <div className="space-y-6">
+            {/* Profile Card */}
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm text-center">
+              <div className="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+              {
+                        // (contact.first_name+" "+contact.last_name)
+                        (`${lead.first_name ?? ""} ${lead.last_name ?? ""}`.trim() || "Unnamed lead")
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("").toUpperCase() || "?"}
+              </div>
+              <h3 className="font-semibold text-lg mb-1">
+                {fullName}
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                ID: {lead.id}
+              </p>
+  
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-2 justify-center">
+                <History className="w-4 h-4 text-gray-500" />
+                <div>
+                <LeadActivityLog leadId={lead.id} limit={1}/>
+
+                </div>
+              </div>
+            </div>
+  
+            {/* Quick Actions */}
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <h4 className="font-semibold text-gray-900 mb-3">
+                Quick Actions
+              </h4>
+  
+              <div className="space-y-2">
+                <button className="w-full flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
+                  <Phone className="w-4 h-4" /> Call
+                </button>
+  
+                <button className="w-full flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">
+                  <Mail className="w-4 h-4" /> Email
+                </button>
+  
+                <button className="w-full flex items-center gap-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200">
+                  <Calendar className="w-4 h-4" /> Schedule Meeting
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+     </>
+    );
+  };
+  
+  export default ViewLeadDetails;
+  

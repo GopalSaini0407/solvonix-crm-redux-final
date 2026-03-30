@@ -46,6 +46,24 @@ export const getLeadFields=createAsyncThunk("leads/getLeadFields",async(_,thunkA
 
    })
 
+export const leadActivityLog=createAsyncThunk("leads/leadActivityLog",async(leadId,thunkAPI)=>{
+    try{
+        return await leadService.leadActivityLog(leadId);
+    }catch(err){
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+})
+
+export const exportLeadCsv = createAsyncThunk(
+    "leads/exportLeadCsv",
+    async ({ filters, leadIds }, thunkAPI) => {
+      try {
+        return await leadService.exportLeadCsv(filters, leadIds);
+      } catch (err) {
+        return thunkAPI.rejectWithValue(err.response?.data || err.message);
+      }
+    }
+  );
 
 const leadSlice=createSlice({
     name:"leads",
@@ -159,6 +177,34 @@ const leadSlice=createSlice({
            state.loading.fetchFeids=false;
            state.error.fetchFeids=action.payload;
        })
+   // Fetch Activity Log
+   .addCase(leadActivityLog.pending, (state) => {
+    state.loading.log = true;
+    state.error.log = null;
+  })
+  .addCase(leadActivityLog.fulfilled, (state, action) => {
+    state.loading.log = false;
+    state.activities = action.payload?.data; // backend se return array of logs
+  })
+  .addCase(leadActivityLog.rejected, (state, action) => {
+    state.loading.log = false;
+    state.error.log = action.payload?.data;
+  })
+
+  // export lead CSV
+
+  .addCase(exportLeadCsv.pending,(state)=>{
+      state.loading.export=true;
+      state.error.export=null;
+
+  })
+  .addCase(exportLeadCsv.fulfilled,(state)=>{
+      state.loading.export = false;
+  })
+  .addCase(exportLeadCsv.rejected,(state,action)=>{
+      state.loading.export = false;
+       state.error.export=action.payload;
+  })
 
     // delete leads
     .addCase(deleteLead.pending,(state)=>{
