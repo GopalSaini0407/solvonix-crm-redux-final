@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLeads,deleteLead,exportLeadCsv } from "./leadSlice";
 import {
@@ -33,13 +33,81 @@ const { leads, pagination, loading, error } = useSelector(
 (state) => state.leads
 );
 
+const [filters, setFilters] = useState({
+  search: "",
+  lead_stage_id: "",
+  lead_source_id: "",
+  lead_value: "",
+});
+const [currentPage, setCurrentPage] = useState(1);
+
 console.log(leads,"leads list");
 useEffect(() => {
-dispatch(getLeads({ page: pagination.current_page }));
-}, [dispatch]);
+  const delay = setTimeout(() => {
+    dispatch(getLeads({ page: currentPage, ...filters }));
+  }, 300);
+
+  return () => clearTimeout(delay);
+}, [dispatch, currentPage, filters]);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [filters.search, filters.lead_stage_id, filters.lead_source_id, filters.lead_value]);
+
+const filteredLeads = leads.filter((lead) => {
+  const searchLower = filters.search.trim().toLowerCase();
+  const leadName = (lead.name || "").toLowerCase();
+  const leadEmail = (lead.email || "").toLowerCase();
+  const leadPhone = (lead.phone || lead.mobile || "").toString().replace(/[^0-9]/g, "");
+  const searchDigits = filters.search.replace(/[^0-9]/g, "");
+
+  const matchesSearch =
+    !searchLower ||
+    leadName.includes(searchLower) ||
+    leadEmail.includes(searchLower) ||
+    (searchDigits.length > 0 && leadPhone.includes(searchDigits));
+
+  const leadStageId = String(lead.lead_stage_id || lead.lead_stage?.id || "");
+  const leadSourceId = String(lead.lead_source_id || lead.lead_source?.id || "");
+  const leadValue = String(lead.lead_value ?? "");
+
+  const matchesStage = !filters.lead_stage_id || leadStageId === String(filters.lead_stage_id);
+  const matchesSource = !filters.lead_source_id || leadSourceId === String(filters.lead_source_id);
+  const matchesValue = !filters.lead_value || leadValue.includes(String(filters.lead_value).trim());
+
+  return matchesSearch && matchesStage && matchesSource && matchesValue;
+});
+
+const totalLeadsCount = filteredLeads.length;
+const totalLeadValue = filteredLeads.reduce((sum, lead) => {
+  const value = Number.parseFloat(lead.lead_value);
+  return sum + (Number.isNaN(value) ? 0 : value);
+}, 0);
+const thisMonthLeadsCount = filteredLeads.filter((lead) => {
+  if (!lead.created_at) return false;
+
+  const createdAt = new Date(lead.created_at);
+  const now = new Date();
+
+  return (
+    createdAt.getFullYear() === now.getFullYear() &&
+    createdAt.getMonth() === now.getMonth()
+  );
+}).length;
+const hasActiveFilters = Object.values(filters).some((value) => String(value).trim() !== "");
+
 // ---------------- HANDLERS ----------------
 const handlePageChange = (page) => {
-dispatch(getLeads({ page }));
+setCurrentPage(page);
+};
+const handleClearFilters = () => {
+  setFilters({
+    search: "",
+    lead_stage_id: "",
+    lead_source_id: "",
+    lead_value: "",
+  });
+  setCurrentPage(1);
 };
 const handleContactClick = (contact) => {
 console.log("View contact", contact);
@@ -55,7 +123,7 @@ const handleDeleteLead = async (leadId) => {
      try {
        await dispatch(deleteLead(leadId)).unwrap();
        // optional: refresh pagination data
-       dispatch(getLeads({ page: pagination.current_page }));
+       dispatch(getLeads({ page: currentPage, ...filters }));
      } catch(err) {
        console.log("Delete failed", err);
      }
@@ -66,7 +134,7 @@ await exportCSV({
 dispatch,
 action: exportLeadCsv,
 params: {
-filters: {},       // later search / status yahin aayega
+filters,
 leadIds: [],    // selected leads ke ids
 },
 fileName: "leads.csv",
@@ -120,12 +188,12 @@ return (
    </div>
    {/* state */}
    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div className=" rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
          <div className="flex items-center">
             <User className="w-8 h-8 text-blue-600" />
             <div className="ml-3">
                <p className="text-sm font-medium text-gray-600">Total leads</p>
-               <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+               <p className="text-2xl font-bold text-gray-900">{totalLeadsCount}</p>
             </div>
          </div>
       </div>
@@ -133,8 +201,10 @@ return (
          <div className="flex items-center">
             <User className="w-8 h-8 text-blue-600" />
             <div className="ml-3">
-               <p className="text-sm font-medium text-gray-600">Total leads</p>
-               <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+               <p className="text-sm font-medium text-gray-600">Total value</p>
+               <p className="text-2xl font-bold text-gray-900">
+                 {totalLeadValue.toLocaleString("en-IN")}
+               </p>
             </div>
          </div>
       </div>
@@ -142,23 +212,58 @@ return (
          <div className="flex items-center">
             <User className="w-8 h-8 text-blue-600" />
             <div className="ml-3">
-               <p className="text-sm font-medium text-gray-600">Total leads</p>
-               <p className="text-2xl font-bold text-gray-900">{pagination.total}</p>
+               <p className="text-sm font-medium text-gray-600">This month leads</p>
+               <p className="text-2xl font-bold text-gray-900">{thisMonthLeadsCount}</p>
             </div>
          </div>
       </div>
    </div>
    {/* filter */}
-   <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm flex gap-3">
+   <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+   <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+      <input
+         type="text"
+         value={filters.search}
+         onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+         placeholder="Search by name, email or phone"
+         className="w-full px-3 py-2 border border-gray-300 outline-none rounded-lg focus:ring-2 focus:ring-blue-500"
+      />
+      </div>
    <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">Stage</label>
-      <LeadStageDropdown/>
+      <LeadStageDropdown
+         value={filters.lead_stage_id}
+         onChange={(value) => setFilters((prev) => ({ ...prev, lead_stage_id: value }))}
+      />
       </div>
       <div>
          <label className="block text-sm font-medium text-gray-700 mb-2">Source</label>
-         <ChannelList/>
+         <ChannelList
+            value={filters.lead_source_id}
+            onChange={(value) => setFilters((prev) => ({ ...prev, lead_source_id: value }))}
+         />
       </div>
-      
+      <div>
+         <label className="block text-sm font-medium text-gray-700 mb-2">Lead Value</label>
+         <input
+            type="number"
+            min="0"
+            value={filters.lead_value}
+            onChange={(e) => setFilters((prev) => ({ ...prev, lead_value: e.target.value }))}
+            placeholder="Filter by lead value"
+            className="w-full px-3 py-2 border border-gray-300 outline-none rounded-lg focus:ring-2 focus:ring-blue-500"
+         />
+      </div>
+   </div>
+   <div className="flex justify-end mb-6">
+      <CustomButton
+         onClick={handleClearFilters}
+         variant="border"
+         disabled={!hasActiveFilters}
+      >
+         Clear Filters
+      </CustomButton>
    </div>
    <TabsWithUrl defaultValue="table">
       <TabsList className="flex justify-end mb-3">
@@ -203,7 +308,7 @@ return (
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                     {leads.map((lead) => (
+                     {filteredLeads.map((lead) => (
                      <tr key={lead.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
                            <div className="flex items-center gap-3">
@@ -226,7 +331,7 @@ return (
                            {lead.phone || "No phone"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
-                        {lead.currency}{lead.lead_value || "No value"}
+                        {lead.currency} {lead.lead_value || "No value"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
                            {lead.lead_stage?.stage_name || "no lead stage"}
@@ -292,7 +397,7 @@ return (
       <TabsContent value="cards">
          <div className="grid grid-cols-4 gap-4">
             {
-            leads.map((lead)=>(
+            filteredLeads.map((lead)=>(
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                <div className="mb-4">
                   <div className="flex justify-between">
@@ -358,7 +463,7 @@ return (
                         <span className="text-sm text-gray-600">{lead.phone}</span>
                      </div>
                      <div className="flex items-center justify-between space-x-2 mb-1">
-                        <span className="text-sm text-gray-600 my-2 flex">{lead.currency}{lead.lead_value}</span>
+                        <span className="text-sm text-gray-600 my-2 flex">{lead.currency} {lead.lead_value}</span>
                         <span className="text-sm text-green-700">{lead.lead_source?.channel || lead.lead_source_name || "no lead source"}</span>
                      </div>
                      <div className="flex items-center space-x-2">
@@ -377,7 +482,7 @@ return (
       <div className="text-sm text-gray-700">
          Page{" "}
          <span className="font-medium">
-         {pagination.current_page}
+         {pagination.current_page || currentPage}
          </span>{" "}
          of{" "}
          <span className="font-medium">
@@ -387,9 +492,9 @@ return (
       <div className="flex space-x-2">
          <button
             onClick={() =>
-            handlePageChange(pagination.current_page - 1)
+            handlePageChange((pagination.current_page || currentPage) - 1)
             }
-            disabled={pagination.current_page === 1}
+            disabled={(pagination.current_page || currentPage) === 1}
             className="px-3 py-1 rounded-md border border-gray-300 text-sm font-medium disabled:opacity-50"
             >
             <ChevronLeft className="w-4 h-4" />
@@ -408,7 +513,7 @@ return (
                onClick={()=>handlePageChange(page)}
             className={`px-3 py-1 rounded-md text-sm font-medium border
             ${
-            pagination.current_page===page ?
+            (pagination.current_page || currentPage)===page ?
             "bg-blue-600 text-white border-blue-600"
             :"border-grey-300 text-gray-700 hover:bg-gray-50"
             }
@@ -421,10 +526,10 @@ return (
          </div>
          <button
             onClick={() =>
-            handlePageChange(pagination.current_page + 1)
+            handlePageChange((pagination.current_page || currentPage) + 1)
             }
             disabled={
-            pagination.current_page === pagination.last_page
+            (pagination.current_page || currentPage) === pagination.last_page
             }
             className="px-3 py-1 rounded-md border border-gray-300 text-sm font-medium disabled:opacity-50"
             >
@@ -432,7 +537,7 @@ return (
          </button>
       </div>
    </div>
-   {leads.length === 0 && (
+   {filteredLeads.length === 0 && (
    <div className="text-center py-12">
       <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
       <h3 className="text-lg font-medium text-gray-900">

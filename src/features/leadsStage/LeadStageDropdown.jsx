@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLeadStage } from './leadStageSlice';
-function LeadStageDropdown() {
+function LeadStageDropdown({ value, onChange }) {
      const dispatch=useDispatch()
      const { leadStages} = useSelector(
         (state) => state.leadStages
@@ -13,8 +13,14 @@ function LeadStageDropdown() {
    
   return (
     <div>
-      <select name="channel" id="channel" className='w-full px-3 py-2 border border-gray-300 outline-none  rounded-lg focus:ring-2 focus:ring-blue-500'>
-      <option value="all">All select</option>
+      <select 
+        name="stage" 
+        id="stage" 
+        value={value || ""} 
+        onChange={(e) => onChange && onChange(e.target.value)}
+        className='w-full px-3 py-2 border border-gray-300 outline-none  rounded-lg focus:ring-2 focus:ring-blue-500'
+      >
+      <option value="">All Stages</option>
        {
         leadStages?.map((stage)=>(
             <option value={stage.id} key={stage.id}>{stage.stage_name}</option>

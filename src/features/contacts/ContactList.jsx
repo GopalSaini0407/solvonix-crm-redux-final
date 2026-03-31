@@ -187,14 +187,14 @@ return (
   type="date"
   value={startDate}
   onChange={(e) => setStartDate(e.target.value)}
-  className="border px-2 py-1 rounded"
+  className="border border-gray-300 px-3 py-1 rounded outline-0 me-3"
 />
 
 <input
   type="date"
   value={endDate}
   onChange={(e) => setEndDate(e.target.value)}
-  className="border px-2 py-1 rounded"
+  className="border border-gray-300 px-3 py-1 rounded outline-0"
 />
     </div>
       
@@ -240,7 +240,11 @@ return (
                            <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                                  {
-                                 (contact?.name || `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() || "Unnamed Contact")
+                                 (
+                                 `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() ||
+                                 contact?.name ||
+                                 "Unnamed Contact"
+                                 )
                                  .split(" ")
                                  .map((n) => n[0])
                                  .join("")
@@ -248,7 +252,11 @@ return (
                                  }
                               </div>
                               <div className="font-medium text-gray-900">
-                                 {contact?.name || `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() || "Unnamed Contact"}
+                                 {(
+                                 `${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() ||
+                                 contact?.name ||
+                                 "Unnamed Contact"
+                                 )}                      
                               </div>
                            </div>
                         </td>
