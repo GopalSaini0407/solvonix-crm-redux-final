@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchContactFields,
+  selectActiveContactFields,
   setFieldValue,
   addContact,
   updateContact,
@@ -13,16 +14,17 @@ import RenderField from "./RenderField";
 const ContactForm = ({  editContact = null,closeModal }) => {
   const dispatch = useDispatch();
 
-  const { fields, fieldValues,pagination, loading, error } = useSelector(
+  const { fields: allFields, fieldValues,pagination, loading, error } = useSelector(
     (state) => state.contacts
   );
+  const fields = useSelector(selectActiveContactFields);
 
   // Fetch fields
   useEffect(() => {
-    if (!fields || Object.keys(fields).length === 0) {
+    if (!allFields || Object.keys(allFields).length === 0) {
       dispatch(fetchContactFields());
     }
-  }, [dispatch, fields]);
+  }, [dispatch, allFields]);
 
   // Prefill for edit
   useEffect(() => {

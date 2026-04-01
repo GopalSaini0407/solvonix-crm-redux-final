@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchLeadStage } from './leadStageSlice';
+import { fetchLeadStage, selectActiveLeadStages } from './leadStageSlice';
 function LeadStageDropdown({ value, onChange }) {
      const dispatch=useDispatch()
-     const { leadStages} = useSelector(
-        (state) => state.leadStages
-      );    
+     const leadStages = useSelector(selectActiveLeadStages);
 
    useEffect(()=>{
      dispatch(fetchLeadStage())

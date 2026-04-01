@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getLeadChannel } from './leadChannelSlice';
+import { getLeadChannel, selectActiveLeadChannels } from './leadChannelSlice';
 function ChannelList({ value, onChange }) {
      const dispatch=useDispatch()
-    const {leadChannel}=useSelector((state)=>state.leadChannel);
+    const leadChannel = useSelector(selectActiveLeadChannels);
     
    useEffect(()=>{
      dispatch(getLeadChannel())

@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import leadStageService from './leadStageService';
 
+const sortLeadStages = (stages = []) =>
+  [...stages].sort((a, b) => {
+    const activeDiff = Number(b?.is_active ?? 0) - Number(a?.is_active ?? 0);
+    if (activeDiff !== 0) return activeDiff;
+    return (a?.priority ?? 999) - (b?.priority ?? 999);
+  });
+
 // fetch lead stages
 export const fetchLeadStage = createAsyncThunk(
   'leadStages/fetchLeadStage',
@@ -84,7 +91,7 @@ const leadStageSlice = createSlice({
       })
       .addCase(fetchLeadStage.fulfilled, (state, action) => {
         state.loading.fetch = false;
-        state.leadStages = action.payload?.data || [];
+        state.leadStages = sortLeadStages(action.payload?.data || []);
       })
       .addCase(fetchLeadStage.rejected, (state, action) => {
         state.loading.fetch = false;
@@ -114,13 +121,21 @@ const leadStageSlice = createSlice({
       })
       .addCase(updateLeadStage.fulfilled, (state, action) => {
         state.loading.update = false;
-        const updated = action.payload?.data || action.payload;
+        const updated = {
+          ...(action.payload?.data || action.payload || {}),
+          ...(action.meta?.arg?.data || {}),
+          id: action.payload?.data?.id || action.payload?.id || action.meta?.arg?.leadStageId,
+        };
         const index = state.leadStages.findIndex(
           (item) => item.id === updated.id
         );
         if (index !== -1) {
-          state.leadStages[index] = updated;
+          state.leadStages[index] = {
+            ...state.leadStages[index],
+            ...updated,
+          };
         }
+        state.leadStages = sortLeadStages(state.leadStages);
       })
       .addCase(updateLeadStage.rejected, (state, action) => {
         state.loading.update = false;
@@ -144,5 +159,8 @@ const leadStageSlice = createSlice({
 });
 
 export const { reorderLeadStages } = leadStageSlice.actions;
+
+export const selectActiveLeadStages = (state) =>
+  (state.leadStages?.leadStages || []).filter((stage) => Number(stage?.is_active ?? 0) === 1);
 
 export default leadStageSlice.reducer;

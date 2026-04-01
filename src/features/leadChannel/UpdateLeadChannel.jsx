@@ -10,8 +10,8 @@ function UpdateLeadChannel({closeModal,leadChannel}) {
 
     const [form,setForm]=useState({
         channel:"",
+        is_active:1,
     })
-    console.log(leadChannel);
     
     const handleChange=(e)=>{
      const {name,value,type,checked}=e.target;
@@ -23,7 +23,8 @@ function UpdateLeadChannel({closeModal,leadChannel}) {
 
     useEffect(()=>{
         setForm({
-            channel:leadChannel.channel ?? ""
+            channel:leadChannel.channel ?? "",
+            is_active:Number(leadChannel.is_active ?? 1),
         })
     },[leadChannel])
       
@@ -44,7 +45,10 @@ function UpdateLeadChannel({closeModal,leadChannel}) {
         try {
            await dispatch(updateLeadChannel({
             id: leadChannel.id,
-            data: { channel: trimdChannel }
+            data: {
+                channel: trimdChannel,
+                is_active: form.is_active,
+            }
            }
             
            )).unwrap();
@@ -69,7 +73,7 @@ function UpdateLeadChannel({closeModal,leadChannel}) {
           placeholder='enter Source name' />
         </div>
 
-        {/* <div>
+        <div>
             <input type="checkbox" 
                name='is_active'
                onChange={handleChange}
@@ -77,7 +81,7 @@ function UpdateLeadChannel({closeModal,leadChannel}) {
               className='p-2 me-3'
                id='active' />
             <label htmlFor="active">Active</label>
-        </div> */}
+        </div>
 
         <div className='flex justify-end '>
         <CustomButton 

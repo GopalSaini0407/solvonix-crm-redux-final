@@ -1,6 +1,23 @@
 import leadService from "./leadService";
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
 
+const normalizeGroupedFields = (groups = {}) =>
+  Object.fromEntries(
+    Object.entries(groups || {}).map(([groupName, groupFields]) => [
+      groupName,
+      [...(groupFields || [])]
+        .map((field) => ({
+          ...field,
+          is_active: Number(field?.is_active ?? 1),
+        }))
+        .sort((a, b) => {
+          const activeDiff = Number(b?.is_active ?? 0) - Number(a?.is_active ?? 0);
+          if (activeDiff !== 0) return activeDiff;
+          return (a?.priority ?? 999) - (b?.priority ?? 999);
+        }),
+    ])
+  );
+
 export const getLeads=createAsyncThunk("leads/getLeads",async(params,thunkAPI)=>{
 
     try {
@@ -171,7 +188,7 @@ const leadSlice=createSlice({
        })
        .addCase(getLeadFields.fulfilled,(state,action)=>{
            state.loading.fetchFeids=false;
-           state.fields=action.payload.data;
+           state.fields=normalizeGroupedFields(action.payload?.data || {});
        })
        .addCase(getLeadFields.rejected,(state,action)=>{
            state.loading.fetchFeids=false;
@@ -222,4 +239,11 @@ const leadSlice=createSlice({
 })
 
 export const { setFieldValue,resetFieldValues } = leadSlice.actions;
+export const selectActiveLeadFields = (state) =>
+  Object.fromEntries(
+    Object.entries(state.leads?.fields || {}).map(([groupName, groupFields]) => [
+      groupName,
+      (groupFields || []).filter((field) => Number(field?.is_active ?? 0) === 1),
+    ]).filter(([, groupFields]) => groupFields.length > 0)
+  );
 export default leadSlice.reducer;

@@ -5,6 +5,7 @@ import {
   fetchContactCustomField,
   reorderCustomFields,
   moveCustomField,
+  updateCustomField,
   updateCustomFieldPriority,
 } from "./customFieldSlice";
 import CustomFieldForm from "./CustomFieldForm";
@@ -12,10 +13,26 @@ import { useEffect } from "react";
 import { useModal } from "../../context/ModalContext";
 import Loader from "../../components/ui/Loader";
 import PriorityDragDrop from "../../components/shared/PriorityDragDrop";
-import {
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+
+const buildTogglePayload = (field, moduleName) => {
+  const payload = {
+    ...field,
+    field_for: moduleName,
+    is_required: Number(field?.is_required ?? 0),
+    is_email: Number(field?.is_email ?? 0),
+    is_multiple: Number(field?.is_multiple ?? 0),
+    is_active: Number(field?.is_active ?? 0) === 1 ? 0 : 1,
+    consent: Number(field?.consent ?? 0),
+  };
+
+  if (Array.isArray(payload.field_options)) {
+    payload.field_options = payload.field_options.join(",");
+  }
+
+  return payload;
+};
+
 const ViewFieldList = ({moduleName}) => {
   const { openModal, closeModal } = useModal();
   const dispatch = useDispatch();
@@ -127,9 +144,13 @@ const destItems = Array.from(moduleFields[destGroup] || []);
     console.log(error);
   }
 
-  const toggleActive=(field)=>{
-    alert(field.id)
-  }
+  const toggleActive = async (field) => {
+    try {
+      await dispatch(updateCustomField(buildTogglePayload(field, moduleName))).unwrap();
+    } catch (err) {
+      alert(err?.message || "Failed to update field status");
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4">
@@ -147,22 +168,29 @@ const destItems = Array.from(moduleFields[destGroup] || []);
         }
         renderItem={(field) => (
           <div className="flex mt-2 items-center justify-between text-gray-700 border-2 p-2 border-gray-100 rounded bg-gray-50 hover:bg-gray-100 transition">
-            <span>
-              {field.display_text}{" "}
-              <small className="text-xs text-gray-400">
-                (P : {field.priority})
-              </small>
-            </span>
+            <div>
+              <span>
+                {field.display_text}{" "}
+                <small className="text-xs text-gray-400">
+                  (P : {field.priority})
+                </small>
+              </span>
+              <p className={`text-xs mt-1 ${Number(field.is_active) === 1 ? "text-green-600" : "text-gray-500"}`}>
+                Preview: {Number(field.is_active) === 1 ? "Active" : "Inactive"}
+              </p>
+            </div>
             <div>
    <button
                     onClick={() => toggleActive(field)}
+                    disabled={loading.update}
+                    title={Number(field.is_active) === 1 ? "Deactivate field" : "Activate field"}
                     className={`p-2 rounded-lg cursor-pointer ${
-                      field.is_active
+                      Number(field.is_active) === 1
                         ? "text-green-600 hover:bg-green-100"
                         : "text-gray-400 hover:bg-gray-100"
-                    }`}
+                    } ${loading.update ? "opacity-60 cursor-not-allowed" : ""}`}
                   >
-                    {field.is_active ? <Eye size={18} /> : <EyeOff size={18} />}
+                    {Number(field.is_active) === 1 ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
   
             <button

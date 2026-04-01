@@ -38,21 +38,24 @@ const getLeadFields=async()=>{
 // export lead csv
 
 const exportLeadCsv = async (filters = {}, leadIds = []) => {
-  const res = await api.get(
-    "/user/lead/export/csv",
-    {
-      params: {
-        filters: {
-          search: filters.search,
-          status: filters.status,
-          date_from: filters.date_from,
-          date_to: filters.date_to,
-        },
-        lead_ids: JSON.stringify(leadIds), // ⭐ IMPORTANT
-      },
-      responseType: "blob",
-    }
-  );
+  const params = {};
+
+  if (filters && typeof filters === "object") {
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        params[key] = value;
+      }
+    });
+  }
+
+  if (Array.isArray(leadIds) && leadIds.length > 0) {
+    params.lead_ids = leadIds; // axios sends #lead_ids[]=1&lead_ids[]=2, which backend expects
+  }
+
+  const res = await api.get("/user/lead/export/csv", {
+    params,
+    responseType: "blob",
+  });
 
   return res.data;
 };

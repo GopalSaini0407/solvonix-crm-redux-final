@@ -30,6 +30,13 @@ export const updateLeadChannel=createAsyncThunk('leadChannel/updateChannel',asyn
     }
 })
 
+const sortLeadChannels = (channels = []) =>
+  [...channels].sort((a, b) => {
+    const activeDiff = Number(b?.is_active ?? 0) - Number(a?.is_active ?? 0);
+    if (activeDiff !== 0) return activeDiff;
+    return (a?.channel || "").localeCompare(b?.channel || "", undefined, { sensitivity: "base" });
+  });
+
 
 const createLeadChannel=createSlice({
     name:"leadChannel",
@@ -58,7 +65,7 @@ const createLeadChannel=createSlice({
       })
       .addCase(getLeadChannel.fulfilled,(state,action)=>{
         state.loading.fetch=false;
-        state.leadChannel=action.payload?.data;
+        state.leadChannel=sortLeadChannels(action.payload?.data || []);
         state.error.fetch=null
       })
       .addCase(getLeadChannel.rejected,(state,action)=>{
@@ -90,26 +97,32 @@ const createLeadChannel=createSlice({
     })
     .addCase(updateLeadChannel.fulfilled,(state,action)=>{
         state.loading.update = false;
-    
-        const updated = action.payload?.data;
-    
-        if (!updated) {
-            console.warn("No updated object returned from API");
-            return;
-        }
-    
-        const index = state.leadChannel.findIndex(
-            (item) => item.id === updated.id
-        );
-    
+
+        const fallbackUpdated = {
+          id: action.meta.arg.id,
+          ...action.meta.arg.data,
+        };
+        const updated = action.payload?.data || fallbackUpdated;
+
+        const index = state.leadChannel.findIndex((item) => item.id === updated.id);
+
         if (index !== -1) {
-            state.leadChannel[index] = updated;
+            state.leadChannel[index] = {
+              ...state.leadChannel[index],
+              ...updated,
+            };
         }
+
+        state.leadChannel = sortLeadChannels(state.leadChannel);
+        state.error.update = null;
     })
     .addCase(updateLeadChannel.rejected,(state,action)=>{
      state.loading.update=false;
      state.error.update=action.payload;
     })
 })
+
+export const selectActiveLeadChannels = (state) =>
+  (state.leadChannel?.leadChannel || []).filter((channel) => Number(channel?.is_active ?? 0) === 1);
 
 export default createLeadChannel.reducer;

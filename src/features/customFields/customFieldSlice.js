@@ -1,4 +1,3 @@
-import { Contact } from "lucide-react";
 import customFieldService from "./customFieldService";
 import { createAsyncThunk,createSlice } from "@reduxjs/toolkit";
 
@@ -77,6 +76,9 @@ const  initialState={
     }
        
 }
+
+const sortFieldsByPriority = (fields = []) =>
+  [...fields].sort((a, b) => (a?.priority ?? 999) - (b?.priority ?? 999));
 
 const customFieldSlice=createSlice({
     name:"customFields",
@@ -169,7 +171,11 @@ const customFieldSlice=createSlice({
     .addCase(updateCustomField.fulfilled, (state, action) => {
       state.loading.update = false;
     
-      const updatedField = action.meta.arg;   // 🔥 FIXED
+      const updatedField = {
+        ...(action.payload?.data || {}),
+        ...action.meta.arg,
+        is_active: Number(action.meta.arg?.is_active ?? action.payload?.data?.is_active ?? 1),
+      };
       const moduleName = updatedField.field_for;
       const newGroup = updatedField.field_group;
     
@@ -198,6 +204,9 @@ const customFieldSlice=createSlice({
       }
     
       state.customFields[moduleName][newGroup].push(updatedField);
+      state.customFields[moduleName][newGroup] = sortFieldsByPriority(
+        state.customFields[moduleName][newGroup]
+      );
     
       state.error.update = null;
     })

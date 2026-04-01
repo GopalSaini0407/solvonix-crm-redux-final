@@ -7,11 +7,10 @@ function AddLeadChannel({closeModal}) {
   
   const dispatch=useDispatch();
   const { loading } = useSelector(state => state.leadChannel)
-
-  console.log(loading)
+  
   const [form,setForm]=useState({
     channel:"",
-    // is_active:0,
+    is_active:1,
   })
 
   const handleChange=(e)=>{
@@ -58,7 +57,7 @@ function AddLeadChannel({closeModal}) {
               placeholder='enter Source name' />
             </div>
 
-            {/* <div>
+            <div>
                 <input type="checkbox" 
                    name='is_active'
                    onChange={handleChange}
@@ -66,7 +65,7 @@ function AddLeadChannel({closeModal}) {
                   className='p-2 me-3'
                    id='active' />
                 <label htmlFor="active">Active</label>
-            </div> */}
+            </div>
 
             <div className='flex justify-end '>
             <CustomButton 

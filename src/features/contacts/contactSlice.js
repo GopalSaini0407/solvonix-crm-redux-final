@@ -1,6 +1,23 @@
 import {createSlice,createAsyncThunk} from "@reduxjs/toolkit";
 import contactService from "./contactService";
 
+const normalizeGroupedFields = (groups = {}) =>
+  Object.fromEntries(
+    Object.entries(groups || {}).map(([groupName, groupFields]) => [
+      groupName,
+      [...(groupFields || [])]
+        .map((field) => ({
+          ...field,
+          is_active: Number(field?.is_active ?? 1),
+        }))
+        .sort((a, b) => {
+          const activeDiff = Number(b?.is_active ?? 0) - Number(a?.is_active ?? 0);
+          if (activeDiff !== 0) return activeDiff;
+          return (a?.priority ?? 999) - (b?.priority ?? 999);
+        }),
+    ])
+  );
+
 
   export const fetchContacts=createAsyncThunk("contacts/fetchContacts",async(params,thunkAPI)=>{
     try {
@@ -208,7 +225,7 @@ export const exportContactCsv = createAsyncThunk(
         })
         .addCase(fetchContactFields.fulfilled,(state,action)=>{
             state.loading.fetchFeids=false;
-            state.fields=action.payload.data;
+            state.fields=normalizeGroupedFields(action.payload?.data || {});
         })
         .addCase(fetchContactFields.rejected,(state,action)=>{
             state.loading.fetchFeids=false;
@@ -234,4 +251,11 @@ export const exportContactCsv = createAsyncThunk(
    })
    
 export const { setFieldValue,resetFieldValues } = contactSlice.actions;
+export const selectActiveContactFields = (state) =>
+  Object.fromEntries(
+    Object.entries(state.contacts?.fields || {}).map(([groupName, groupFields]) => [
+      groupName,
+      (groupFields || []).filter((field) => Number(field?.is_active ?? 0) === 1),
+    ]).filter(([, groupFields]) => groupFields.length > 0)
+  );
 export default contactSlice.reducer;

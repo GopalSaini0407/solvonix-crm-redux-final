@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLeads, createLead, updateLead, getLeadFields } from "./leadSlice";
+import { getLeads, createLead, updateLead, getLeadFields, selectActiveLeadFields } from "./leadSlice";
 import { fetchContacts } from "../contacts/contactSlice";
-import { fetchLeadStage } from "../leadsStage/leadStageSlice";
-import { getLeadChannel } from "../leadChannel/leadChannelSlice";
+import { fetchLeadStage, selectActiveLeadStages } from "../leadsStage/leadStageSlice";
+import { getLeadChannel, selectActiveLeadChannels } from "../leadChannel/leadChannelSlice";
 import RenderField from "./RenderField";
 
 const LeadForm = ({ editLead = null, closeModal }) => {
   const dispatch = useDispatch();
 
-  const { pagination, loading, error, fields } = useSelector((state) => state.leads);
+  const { pagination, loading, error, fields: allFields } = useSelector((state) => state.leads);
+  const fields = useSelector(selectActiveLeadFields);
   const { contacts } = useSelector((state) => state.contacts);
-  const { leadStages } = useSelector((state) => state.leadStages);
-  const { leadChannel } = useSelector((state) => state.leadChannel);
+  const activeLeadStages = useSelector(selectActiveLeadStages);
+  const activeLeadChannels = useSelector(selectActiveLeadChannels);
 
   const [formData, setFormData] = useState({});
   const [contactSearch, setContactSearch] = useState("");
@@ -36,10 +37,10 @@ const LeadForm = ({ editLead = null, closeModal }) => {
     dispatch(fetchContacts({ page: 1, search: "" }));
     dispatch(fetchLeadStage());
     dispatch(getLeadChannel());
-    if (!fields || Object.keys(fields).length === 0) {
+    if (!allFields || Object.keys(allFields).length === 0) {
       dispatch(getLeadFields());
     }
-  }, [dispatch, fields]);
+  }, [dispatch, allFields]);
 
   useEffect(() => {
     if (editLead) {
@@ -166,10 +167,10 @@ const LeadForm = ({ editLead = null, closeModal }) => {
 
   const getFieldOptions = (field) => {
     if (["lead_stage", "lead_stage_id", "stage", "stage_id"].includes(field.field_name)) {
-      return leadStages.map((stage) => ({ label: stage.stage_name, value: stage.id }));
+      return activeLeadStages.map((stage) => ({ label: stage.stage_name, value: stage.id }));
     }
     if (["lead_source", "lead_source_id", "source", "source_id"].includes(field.field_name)) {
-      return leadChannel.map((channel) => ({ label: channel.channel, value: channel.id }));
+      return activeLeadChannels.map((channel) => ({ label: channel.channel, value: channel.id }));
     }
     if (["currency", "currency_code"].includes(field.field_name)) {
       return currencies.map((c) => ({ label: `${c.symbol} (${c.code})`, value: c.code }));

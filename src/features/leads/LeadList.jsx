@@ -130,16 +130,31 @@ const handleDeleteLead = async (leadId) => {
    }
  };
 const handleExportLeads = async () => {
-await exportCSV({
-dispatch,
-action: exportLeadCsv,
-params: {
-filters,
-leadIds: [],    // selected leads ke ids
-},
-fileName: "leads.csv",
-mimeType: "text/csv",
-});
+  const exportFilters = {};
+
+  if (filters.search?.trim()) {
+    exportFilters.search = filters.search.trim();
+  }
+  if (filters.lead_stage_id) {
+    exportFilters.lead_stage_id = filters.lead_stage_id;
+  }
+  if (filters.lead_source_id) {
+    exportFilters.lead_source_id = filters.lead_source_id;
+  }
+  if (filters.lead_value) {
+    exportFilters.lead_value = filters.lead_value;
+  }
+
+  await exportCSV({
+    dispatch,
+    action: exportLeadCsv,
+    params: {
+      filters: exportFilters,
+      leadIds: [],
+    },
+    fileName: "leads.csv",
+    mimeType: "text/csv",
+  });
 };
 // ---------------- UI ----------------
 if (loading.fetch){
