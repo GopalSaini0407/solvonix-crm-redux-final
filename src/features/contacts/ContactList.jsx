@@ -43,7 +43,7 @@ useEffect(()=>{
     dispatch(
       fetchContacts({
         page: currentPage,
-        name: search,
+        search,
         start_date:startDate,
         end_date:endDate,
       })
@@ -75,24 +75,51 @@ if(window.confirm("Are you sure you want to delete this contact?")){
 try {
 await dispatch(deleteContact(contactId)).unwrap();
 // optional: refresh pagination data
-dispatch(fetchContacts({ page: currentPage, name: search, start_date: startDate, end_date: endDate }));
+dispatch(fetchContacts({ page: currentPage, search, start_date: startDate, end_date: endDate }));
 } catch(err) {
 console.log("Delete failed", err);
 }
 }
 };
 const handleExportContacts = async () => {
+const exportFilters = {};
+
+if (search.trim()) {
+  exportFilters.search = search.trim();
+}
+if (startDate) {
+  exportFilters.date_from = startDate;
+}
+if (endDate) {
+  exportFilters.date_to = endDate;
+}
+
 await exportCSV({
 dispatch,
 action: exportContactCsv,
 params: {
-filters: {},       // later search / status yahin aayega
+filters: exportFilters,
 contactIds: [],    // selected contacts ke ids
 },
 fileName: "contacts.csv",
 mimeType: "text/csv",
 });
 };
+
+const filteredContacts = contacts.filter((contact) => {
+const searchLower = search.trim().toLowerCase();
+const fullName = (`${contact?.first_name ?? ""} ${contact?.last_name ?? ""}`.trim() || contact?.name || "").toLowerCase();
+const email = (contact?.email || "").toLowerCase();
+const phone = (contact?.mobile || contact?.phone || "").toString().replace(/[^0-9]/g, "");
+const searchDigits = search.replace(/[^0-9]/g, "");
+
+return (
+  !searchLower ||
+  fullName.includes(searchLower) ||
+  email.includes(searchLower) ||
+  (searchDigits.length > 0 && phone.includes(searchDigits))
+);
+});
 // ---------------- UI ----------------
 if (loading.fetch){
 return ( 
@@ -234,7 +261,7 @@ return (
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                     {contacts.map((contact) => (
+                     {filteredContacts.map((contact) => (
                      <tr key={contact.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
                            <div className="flex items-center gap-3">
@@ -335,7 +362,7 @@ return (
       <TabsContent value="cards">
          <div className="grid grid-cols-4 gap-4">
             {
-            contacts.map((contact)=>(
+            filteredContacts.map((contact)=>(
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                <div className="mb-4">
                   <div className="flex justify-between">
@@ -464,7 +491,7 @@ return (
          </button>
       </div>
    </div>
-   {contacts.length === 0 && (
+   {filteredContacts.length === 0 && (
    <div className="text-center py-12">
       <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
       <h3 className="text-lg font-medium text-gray-900">
