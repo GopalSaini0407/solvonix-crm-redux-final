@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 
 import LeadStages from "../features/leadsStage/LeadStageList";
+import OpportunityStageList from "../features/opportunityStage/OpportunityStageList";
 import CustomFields from "../features/customFields/CustomField";
 import LeadChannel from "../features/leadChannel/LeadChannel";
 import {useSearchParams,useNavigate} from "react-router-dom"
@@ -76,6 +77,8 @@ export default function SettingsPage() {
                 { id: "contacts", name: "Contacts", icon: Users},
                 { id: "lead-channel", name: "LeadChannel", icon: Megaphone },
                 { id: "pipeline", name: "Pipeline", icon: PieChart },
+                { id: "opportunity-stage", name: "Opportunity Stage", icon: PieChart },
+
                 { id: "leads", name: "Leads", icon: Users },
                 { id: "accounts", name: "Accounts", icon: Building },
               ].map((category) => (
@@ -110,7 +113,7 @@ export default function SettingsPage() {
             {activeTab === "appearance" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Appearance</h2>
-                <UsersFilterPage/>
+
               </div>
             )}
 
@@ -159,6 +162,14 @@ export default function SettingsPage() {
                                 <LeadStages/>
                                                     </div>
             )}
+
+              {/* Opportunity Stage Settings */}    
+              {activeTab === "opportunity-stage" && (
+                                <div className="space-y-6">
+                                <OpportunityStageList />
+                                                    </div>
+            )}    
+              
 
             {/* Simple Leads Settings */}
             {activeTab === "leads" && (

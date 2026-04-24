@@ -15,12 +15,14 @@ import ProtectedRoute from "./ProtectedRoute"
 import ContactList from "../features/contacts/ContactList"
 import LeadStageList from "../features/leadsStage/LeadStageList"
 import LeadList from '../features/leads/LeadList'
+import OpportunityList from "../features/opportunities/OpportunityList";
 // later: Leads, Deals, Dashboard etc.
 import Dashboard from "../pages/Dashboard"
 import SettingsPage from "../pages/Settings"
 import UserProfile from '../features/profile/UserProfile'
 
 import CustomField from "../features/customFields/CustomField"
+import EmployeeList from "../features/employees/EmployeeList"
 
 const AppRoutes = () => {
   return (
@@ -47,7 +49,9 @@ const AppRoutes = () => {
   <Route path="contacts" element={<ContactList />} />
   <Route path="leadstage" element={<LeadStageList />} />
   <Route path="leads" element={<LeadList/>}/>
+  <Route path="opportunities" element={<OpportunityList/>}/>
   <Route path="custom-field" element={<CustomField/>}/>
+  <Route path="employees" element={<EmployeeList/>}/>
   <Route path="user-profile" element={<UserProfile/>}/>
   <Route path="*" element={<Navigate to="/" replace />} />
 

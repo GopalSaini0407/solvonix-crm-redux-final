@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLeads, createLead, updateLead, getLeadFields, selectActiveLeadFields } from "./leadSlice";
-import { fetchContacts } from "../contacts/contactSlice";
 import { fetchLeadStage, selectActiveLeadStages } from "../leadsStage/leadStageSlice";
 import { getLeadChannel, selectActiveLeadChannels } from "../leadChannel/leadChannelSlice";
 import RenderField from "./RenderField";
@@ -11,13 +10,10 @@ const LeadForm = ({ editLead = null, closeModal }) => {
 
   const { pagination, loading, error, fields: allFields } = useSelector((state) => state.leads);
   const fields = useSelector(selectActiveLeadFields);
-  const { contacts } = useSelector((state) => state.contacts);
   const activeLeadStages = useSelector(selectActiveLeadStages);
   const activeLeadChannels = useSelector(selectActiveLeadChannels);
 
   const [formData, setFormData] = useState({});
-  const [contactSearch, setContactSearch] = useState("");
-  const [showContactDropdown, setShowContactDropdown] = useState(false);
 
   // Field name detection (must be before useEffect that uses it)
   const allDynamicFields = fields ? Object.values(fields).flat() : [];
@@ -25,16 +21,14 @@ const LeadForm = ({ editLead = null, closeModal }) => {
   const findFieldName = (aliases) =>
     allDynamicFields.find((f) => aliases.includes(f.field_name))?.field_name;
 
-  const contactFieldName = findFieldName(["contact", "contact_id"]);
   const nameFieldName = findFieldName(["name", "full_name"]);
   const emailFieldName = findFieldName(["email"]);
-  const phoneFieldName = findFieldName(["phone", "mobile", "mobile_number"]);
+  const mobileFieldName = findFieldName(["mobile", "phone", "mobile_number"]);
+  const countryCodeFieldName = findFieldName(["country_code", "countryCode"]);
   const stageFieldName = findFieldName(["lead_stage", "lead_stage_id", "stage", "stage_id"]);
   const sourceFieldName = findFieldName(["lead_source", "lead_source_id", "source", "source_id"]);
-  const currencyFieldName = findFieldName(["currency", "currency_code"]);
 
   useEffect(() => {
-    dispatch(fetchContacts({ page: 1, search: "" }));
     dispatch(fetchLeadStage());
     dispatch(getLeadChannel());
     if (!allFields || Object.keys(allFields).length === 0) {
@@ -44,32 +38,51 @@ const LeadForm = ({ editLead = null, closeModal }) => {
 
   useEffect(() => {
     if (editLead) {
-      const formDataObj = {
-        ...editLead,
-        contact_id: editLead.contact_id || "",
-      };
+      const formDataObj = { ...editLead };
 
-      // Ensure phone field is set with correct value from any variant
-      const phoneValue = editLead.phone || editLead.mobile || editLead.mobile_number || editLead[phoneFieldName];
-      if (phoneValue) {
-        formDataObj.phone = phoneValue;
+      const nameValue = editLead.name || `${editLead.first_name ?? ""} ${editLead.last_name ?? ""}`.trim();
+      if (nameValue) {
+        formDataObj.name = nameValue;
       }
 
-      // Ensure lead_stage_id is set with correct value from any variant
+      const emailValue = editLead.email || editLead[emailFieldName];
+      if (emailValue) {
+        formDataObj.email = emailValue;
+      }
+
+      const mobileValue = editLead.mobile || editLead.phone || editLead.mobile_number || editLead[mobileFieldName];
+      if (mobileValue) {
+        formDataObj.mobile = mobileValue;
+      }
+
+      const countryCodeValue = editLead.country_code || editLead[countryCodeFieldName];
+      if (countryCodeValue) {
+        formDataObj.country_code = countryCodeValue;
+      }
+
       const stageValue = editLead.lead_stage_id || editLead.lead_stage || editLead.stage_id || editLead.stage || editLead[stageFieldName];
       if (stageValue) {
         formDataObj.lead_stage_id = stageValue;
       }
 
-      // Ensure lead_source_id is set with correct value from any variant
       const sourceValue = editLead.lead_source_id || editLead.lead_source || editLead.source_id || editLead.source || editLead[sourceFieldName];
       if (sourceValue) {
         formDataObj.lead_source_id = sourceValue;
       }
 
-      // Remove dynamic field variant names since we've normalized to canonical names
-      if (phoneFieldName && phoneFieldName !== "phone") {
-        delete formDataObj[phoneFieldName];
+      if (nameFieldName && nameFieldName !== "name") {
+        delete formDataObj[nameFieldName];
+      }
+      if (emailFieldName && emailFieldName !== "email") {
+        delete formDataObj[emailFieldName];
+      }
+      if (mobileFieldName && mobileFieldName !== "mobile") {
+        delete formDataObj[mobileFieldName];
+        delete formDataObj.phone;
+        delete formDataObj.mobile_number;
+      }
+      if (countryCodeFieldName && countryCodeFieldName !== "country_code") {
+        delete formDataObj[countryCodeFieldName];
       }
       if (stageFieldName && stageFieldName !== "lead_stage_id") {
         delete formDataObj[stageFieldName];
@@ -83,48 +96,12 @@ const LeadForm = ({ editLead = null, closeModal }) => {
         delete formDataObj.source_id;
         delete formDataObj.source;
       }
-      if (contactFieldName && contactFieldName !== "contact_id") {
-        delete formDataObj[contactFieldName];
-      }
 
       setFormData(formDataObj);
-      setContactSearch(editLead.name || editLead.contact?.name || "");
     } else {
       setFormData({});
-      setContactSearch("");
     }
-  }, [editLead, contactFieldName, sourceFieldName, stageFieldName, phoneFieldName]);
-
-  // Filter contacts based on search
-  const filteredContacts = contacts.filter((contact) => {
-    if (!contactSearch) return true; // if no search, show all
-
-    const searchLower = contactSearch.trim().toLowerCase();
-    const contactName = (contact.name || `${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim()).toLowerCase();
-    const contactEmail = (contact.email || "").toLowerCase();
-
-    const contactPhoneRaw = (contact.phone || contact.mobile || "").toString();
-    const contactPhone = contactPhoneRaw.replace(/[^0-9]/g, "");
-    const searchDigits = contactSearch.replace(/[^0-9]/g, "");
-    const matchesPhone = searchDigits.length > 0 && contactPhone.includes(searchDigits);
-
-    return (
-      contactName.includes(searchLower) ||
-      contactEmail.includes(searchLower) ||
-      matchesPhone
-    );
-  });
-
-  // Handle contact search (client-side filtering)
-  const handleContactSearch = (value) => {
-    setContactSearch(value);
-    setShowContactDropdown(true);
-
-    if (value.length === 0) {
-      // keep list in sync when cleared
-      dispatch(fetchContacts({ page: 1 }));
-    }
-  };
+  }, [editLead, nameFieldName, emailFieldName, mobileFieldName, countryCodeFieldName, sourceFieldName, stageFieldName]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({
@@ -181,10 +158,6 @@ const LeadForm = ({ editLead = null, closeModal }) => {
   const buildPayload = (values) => {
     const payload = {};
     Object.entries(values).forEach(([key, value]) => {
-      // Skip dynamic field names - we store directly to canonical names now
-      if (contactFieldName && key === contactFieldName && key !== "contact_id") {
-        return;
-      }
       if (sourceFieldName && key === sourceFieldName && key !== "lead_source_id") {
         return;
       }
@@ -198,7 +171,7 @@ const LeadForm = ({ editLead = null, closeModal }) => {
         value !== undefined &&
         !(Array.isArray(value) && value.length === 0)
       ) {
-        if (["contact_id", "lead_stage_id", "lead_source_id", "stage_id", "source_id"].includes(key)) {
+        if (["lead_stage_id", "lead_source_id", "stage_id", "source_id"].includes(key)) {
           payload[key] = Number(value);
         } else {
           payload[key] = value;
@@ -211,6 +184,7 @@ const LeadForm = ({ editLead = null, closeModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const payload = buildPayload(formData);
 
     try {
@@ -248,79 +222,6 @@ const LeadForm = ({ editLead = null, closeModal }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Contact Selection with Search - Full Width */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contact <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by name, email, or phone..."
-              value={contactSearch}
-              onChange={(e) => handleContactSearch(e.target.value)}
-              onFocus={() => setShowContactDropdown(true)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {showContactDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-64 overflow-y-auto">
-                {loading?.fetch ? (
-                  <div className="px-3 py-2 text-gray-500 text-center">Loading contacts...</div>
-                ) : filteredContacts.length > 0 ? (
-                  filteredContacts.map((contact) => {
-                    const displayName = contact.name || `${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "Unnamed";
-                    return (
-                      <div
-                        key={contact.id}
-                        onClick={() => {
-                          // Only set canonical contact_id field for backend (not the dynamic contact field)
-                          handleChange("contact_id", contact.id);
-
-                          // Populate fields - always store to canonical field names
-                          const fullName = contact.name || `${contact.first_name ?? ""} ${contact.last_name ?? ""}`.trim() || "";
-                          if (fullName) {
-                            handleChange("name", fullName);
-                          }
-                          
-                          const emailValue = contact.email || "";
-                          if (emailValue) {
-                            handleChange("email", emailValue);
-                          }
-                          
-                          const phoneValue = contact.phone || contact.mobile || "";
-                          if (phoneValue) {
-                            handleChange("phone", phoneValue);
-                          }
-
-                          setContactSearch(displayName);
-                          setShowContactDropdown(false);
-                        }}
-                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                      >
-                        <div className="font-medium text-gray-900">{displayName}</div>
-                        <div className="text-xs text-gray-500">
-                          {contact.email && <span>{contact.email}</span>}
-                          {contact.email && (contact.phone || contact.mobile) && <span> • </span>}
-                          {(contact.phone || contact.mobile) && <span>{contact.phone || contact.mobile}</span>}
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="px-3 py-2 text-gray-500 text-center">
-                    {contactSearch ? "No contacts found matching your search" : "Type to search contacts"}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          {formData.contact_id && (
-            <div className="mt-2 p-2 bg-blue-50 rounded text-sm text-blue-700">
-              ✓ Contact selected: {contactSearch}
-            </div>
-          )}
-        </div>
-
         {/* Dynamic Fields from API */}
         {fields && Object.keys(fields).length > 0 ? (
           Object.entries(fields).map(([group, groupFields]) => {
@@ -330,11 +231,6 @@ const LeadForm = ({ editLead = null, closeModal }) => {
                 <div className="bg-gray-100 px-4 py-2 font-semibold">{group}</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                   {sortedFields.map((field) => {
-                    if (field.field_name === contactFieldName) {
-                      return null; // contact handled by custom search selector above
-                    }
-
-                    const value = formData[field.field_name] ?? "";
                     // For special fields, store to canonical backend names
                     let storageFieldName = field.field_name;
                     if (nameFieldName && field.field_name === nameFieldName) {
@@ -345,8 +241,10 @@ const LeadForm = ({ editLead = null, closeModal }) => {
                       storageFieldName = "lead_source_id";
                     } else if (stageFieldName && field.field_name === stageFieldName) {
                       storageFieldName = "lead_stage_id";
-                    } else if (phoneFieldName && field.field_name === phoneFieldName) {
-                      storageFieldName = "phone";
+                    } else if (mobileFieldName && field.field_name === mobileFieldName) {
+                      storageFieldName = "mobile";
+                    } else if (countryCodeFieldName && field.field_name === countryCodeFieldName) {
+                      storageFieldName = "country_code";
                     }
 
                     return (

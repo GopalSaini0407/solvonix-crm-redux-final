@@ -10,6 +10,7 @@ const navigation = [
   { name: 'Leads', href: '/leads', current: false },
   { name: 'Accounts', href: '/accounts', current: false },
   { name: 'Contacts', href: '/contacts', current: false },
+  { name: 'Employees', href: '/employees', current: false },
   { name: 'Opportunities', href: '/opportunities', current: false },
   { 
     name: 'Activities', href: '#', current: false,
